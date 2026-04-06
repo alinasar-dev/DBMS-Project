@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMMS | Campus Maintenance Management</title>
+    <!-- Modern Sans-Serif Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- ==================== VIEW: LOGIN ==================== -->
+    <div id="login-view" class="view active">
+        <!-- Login Header requested by User -->
+        <header class="login-header">
+            <div class="header-container">
+                <div class="brand">
+                    <i data-feather="box" class="brand-icon"></i>
+                    <span>Campus Maintenance Management System</span>
+                </div>
+                <div class="header-links">
+                    <button class="icon-btn theme-toggle" title="Toggle Theme"><i data-feather="sun"></i></button>
+                    <a href="#">Help Center</a>
+                    <a href="#" id="contact-support-link">Contact Support</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="login-container">
+            <div class="card login-card" id="login-card-main">
+                <div class="login-card-header">
+                    <h2>Sign in</h2>
+                    <p class="subtitle">Enter your details to access your dashboard</p>
+                </div>
+
+                <div class="login-tabs">
+                    <button class="login-tab active" data-role="student">Student</button>
+                    <button class="login-tab" data-role="staff">Staff</button>
+                    <button class="login-tab" data-role="admin">Admin</button>
+                </div>
+
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-identifier" id="login-identifier-label">Email</label>
+                        <input type="text" id="login-identifier" required placeholder="name@campus.edu">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required placeholder="••••••••">
+                    </div>
+
+                    <div class="form-row-between">
+                        <div class="form-check">
+                            <input type="checkbox" id="remember">
+                            <label for="remember">Remember me</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block" id="login-btn">
+                        <span class="btn-text">Log in</span>
+                        <div class="spinner hidden"></div>
+                    </button>
+                    <div class="mt-4 text-center" id="registration-link-section">
+                        <p class="subtitle text-xs">Are you a new student? <a href="#" id="toggle-register">Create an
+                                account</a></p>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Registration Card (Hidden by default) -->
+            <div class="card login-card hidden" id="register-card">
+                <div class="login-card-header">
+                    <h2>Student Registration</h2>
+                    <p class="subtitle">Create an account to report campus issues</p>
+                </div>
+
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="reg-student-id">Student ID</label>
+                        <input type="text" id="reg-student-id" required placeholder="e.g. 10425">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-name">Full Name</label>
+                        <input type="text" id="reg-name" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-department">Department</label>
+                        <input type="text" id="reg-department" required placeholder="Computer Science">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">Email</label>
+                        <input type="email" id="reg-email" required placeholder="john@campus.edu">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" required placeholder="••••••••">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block mt-4" id="register-btn">
+                        <span class="btn-text">Register</span>
+                        <div class="spinner hidden"></div>
+                    </button>
+
+                    <div class="mt-4 text-center">
+                        <p class="subtitle text-xs">Already have an account? <a href="#" id="toggle-login">Sign in</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ==================== LOGIN FOOTER ==================== -->
+        <footer class="login-footer" id="login-footer">
+            <div class="login-footer-inner">
+
+                <!-- Developer Info -->
+                <div class="footer-section">
+                    <p class="footer-label">Developer</p>
+                    <div class="footer-links">
+                        <a href="https://github.com/alinasar-dev" target="_blank" class="footer-link">
+                            <i data-feather="github" class="footer-icon"></i>
+                            <span>alinasar-dev</span>
+                        </a>
+                        <a href="mailto:www.alinasar@gmail.com" class="footer-link">
+                            <i data-feather="mail" class="footer-icon"></i>
+                            <span>www.alinasar@gmail.com</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Divider -->
+                <div class="footer-divider"></div>
+
+                <!-- Info Row -->
+                <div class="footer-bottom">
+                    <span class="footer-copy">
+                        <i data-feather="copyright" class="footer-icon-sm"></i>
+                        <span id="footer-year"></span> CMMS &mdash; Campus Maintenance Management System
+                    </span>
+                    <span class="footer-region">
+                        <i data-feather="globe" class="footer-icon-sm"></i>
+                        <span>India (IN)</span>
+                    </span>
+                    <span class="footer-rights">
+                        All rights reserved.
+                    </span>
+                </div>
+
+            </div>
+        </footer>
+    </div>
+
+
+    <!-- ==================== VIEW: APP SHELL ==================== -->
+    <div id="app-shell" class="view hidden">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <i data-feather="box" class="brand-icon"></i>
+                    <span>CMMS</span>
+                </div>
+            </div>
+
+            <div class="sidebar-user">
+                <div class="avatar" id="nav-avatar">U</div>
+                <div class="user-info">
+                    <span id="nav-name" class="name">User Name</span>
+                    <span id="nav-role" class="role">Role</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav" id="sidebar-nav-container">
+                <!-- Links dynamically populated by JS based on role -->
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="nav-item btn-ghost text-danger" id="logout-btn">
+                    <i data-feather="log-out"></i>
+                    Log out
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-workspace">
+            <header class="top-navbar">
+                <div class="navbar-left">
+                    <button class="icon-btn mobile-menu-toggle" id="mobile-menu-toggle">
+                        <i data-feather="menu"></i>
+                    </button>
+                    <h2 class="page-title" id="top-page-title">Dashboard</h2>
+                </div>
+                <div class="navbar-right">
+                    <button class="icon-btn theme-toggle" title="Toggle Theme"><i data-feather="sun"></i></button>
+                    <button class="icon-btn" title="Notifications"><i data-feather="bell"></i></button>
+                    <button class="icon-btn" title="Settings"><i data-feather="settings"></i></button>
+                </div>
+            </header>
+
+            <div class="content-area">
+
+                <!-- === Student Dashboard === -->
+                <section id="dash-student" class="sub-view hidden">
+                    <div class="dashboard-header mb-4">
+                        <div>
+                            <h3 class="greeting">Welcome back, <span id="student-greeting-name"></span> 👋</h3>
+                            <p class="subtitle mt-1">Here is an overview of your reported issues.</p>
+                        </div>
+                        <button class="btn btn-primary btn-icon" id="btn-goto-submit">
+                            <i data-feather="plus"></i> New Complaint
+                        </button>
+                    </div>
+
+                    <div class="stats-grid mb-6">
+                        <div class="stat-card card">
+                            <div class="stat-icon bg-gray"><i data-feather="file-text"></i></div>
+                            <div class="stat-content">
+                                <span class="stat-label">Total Reported</span>
+                                <span class="stat-value" id="stu-stat-total">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-card card">
+                            <div class="stat-icon bg-warning"><i data-feather="clock"></i></div>
+                            <div class="stat-content">
+                                <span class="stat-label">Pending / In Progress</span>
+                                <span class="stat-value" id="stu-stat-pending">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-card card">
+                            <div class="stat-icon bg-success"><i data-feather="check-circle"></i></div>
+                            <div class="stat-content">
+                                <span class="stat-label">Resolved</span>
+                                <span class="stat-value" id="stu-stat-resolved">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Recent Complaints</h4>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ticket ID</th>
+                                        <th>Category</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="student-complaints-body">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                            <div id="student-empty-state" class="empty-state hidden">
+                                <div class="empty-icon"><i data-feather="inbox"></i></div>
+                                <h4>No complaints found</h4>
+                                <p>You haven't reported any issues yet.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- === Submit Complaint === -->
+                <section id="dash-submit" class="sub-view hidden">
+                    <button class="btn btn-link mb-4" id="btn-back-dash">
+                        <i data-feather="arrow-left"></i> Back to Dashboard
+                    </button>
+
+                    <div class="card form-card">
+                        <div class="card-header">
+                            <h4 class="card-title">Submit a New Complaint</h4>
+                            <p class="subtitle">Please provide detailed information to help us route your request
+                                quickly.</p>
+                        </div>
+                        <div class="card-body">
+                            <form id="submit-complaint-form">
+                                <div class="form-row">
+                                    <div class="form-group flex-1">
+                                        <label for="category">Category</label>
+                                        <div class="select-wrapper">
+                                            <select id="category" required>
+                                                <option value="" disabled selected>Select Category</option>
+                                                <option value="Electrical">Electrical</option>
+                                                <option value="Plumbing">Plumbing</option>
+                                                <option value="WiFi">WiFi/Network</option>
+                                                <option value="Infrastructure">Infrastructure (Furniture)</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                            <i data-feather="chevron-down" class="select-icon"></i>
+                                        </div>
+                                    </div>
+                                    <div class="form-group flex-1">
+                                        <label for="location">Location</label>
+                                        <input type="text" id="location" required placeholder="e.g., Block A, Room 204">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="description">Detailed Description</label>
+                                    <textarea id="description" rows="5" required
+                                        placeholder="Describe what exactly is broken or needs attention..."></textarea>
+                                </div>
+
+                                <div class="form-actions mt-4 text-right">
+                                    <button type="submit" class="btn btn-primary" id="submit-btn">
+                                        <span class="btn-text">Submit Request</span>
+                                        <div class="spinner hidden"></div>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- === Admin Dashboard === -->
+                <section id="dash-admin" class="sub-view hidden">
+                    <div class="dashboard-header mb-4">
+                        <div>
+                            <h3 class="greeting">Administrator Overview</h3>
+                            <p class="subtitle mt-1">Manage and assign open maintenance requests.</p>
+                        </div>
+                    </div>
+
+                    <!-- Analytics Row -->
+                    <div class="card mb-6 pattern-bg">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">Resolution Analytics</h4>
+                            <div class="progress-bar-container">
+                                <div class="progress-labels">
+                                    <span class="progress-label text-success">Resolved (<span
+                                            id="admin-p-resolved">0</span>)</span>
+                                    <span class="progress-label text-warning">Pending/Progress (<span
+                                            id="admin-p-pending">0</span>)</span>
+                                </div>
+                                <div class="progress-track">
+                                    <div id="progress-fill" class="progress-fill bg-success"></div>
+                                </div>
+                                <div class="text-right mt-1 subtitle text-xs">Total: <span id="admin-p-total">0</span>
+                                    Complaints</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">All Complaints Queue</h4>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ticket ID</th>
+                                        <th>Reported By</th>
+                                        <th>Category</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                        <th class="text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-complaints-body">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                            <div id="admin-empty-state" class="empty-state hidden">
+                                <div class="empty-icon"><i data-feather="check"></i></div>
+                                <h4>All caught up!</h4>
+                                <p>There are no active complaints in the system.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- === Admin Resolved Tasks === -->
+                <section id="dash-admin-resolved" class="sub-view hidden">
+                    <div class="dashboard-header mb-4">
+                        <div>
+                            <h3 class="greeting">Resolved Complaints</h3>
+                            <p class="subtitle mt-1">History of all fully resolved maintenance requests.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header flex-between">
+                            <h4 class="card-title">Resolved Queue</h4>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ticket ID</th>
+                                        <th>Reported By</th>
+                                        <th>Category</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                        <th class="text-right">Assigned Staff</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-resolved-body">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                            <div id="admin-resolved-empty-state" class="empty-state hidden">
+                                <div class="empty-icon"><i data-feather="archive"></i></div>
+                                <h4>No resolved complaints</h4>
+                                <p>Complaints marked as resolved will appear here.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- === Admin Add Staff === -->
+                <section id="dash-admin-add-staff" class="sub-view hidden">
+                    <button class="btn btn-link mb-4" id="btn-back-dash-admin">
+                        <i data-feather="arrow-left"></i> Back to Dashboard
+                    </button>
+
+                    <div class="card form-card">
+                        <div class="card-header">
+                            <h4 class="card-title">Register New Maintenance Staff</h4>
+                            <p class="subtitle">Add a new staff member to the system for task routing.</p>
+                        </div>
+                        <div class="card-body">
+                            <form id="add-staff-form">
+                                <div class="form-row">
+                                    <div class="form-group flex-1">
+                                        <label for="staff-name">Staff Name</label>
+                                        <input type="text" id="staff-name" required placeholder="e.g., John Doe">
+                                    </div>
+                                    <div class="form-group flex-1">
+                                        <label for="staff-email">Email Address</label>
+                                        <input type="email" id="staff-email" required placeholder="staff@campus.edu">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group flex-1">
+                                        <label for="staff-department">Department</label>
+                                        <div class="select-wrapper">
+                                            <select id="staff-department" required>
+                                                <option value="" disabled selected>Select Department</option>
+                                                <option value="Electrical">Electrical</option>
+                                                <option value="Plumbing">Plumbing</option>
+                                                <option value="IT">IT/Networking</option>
+                                                <option value="Infrastructure">Infrastructure</option>
+                                            </select>
+                                            <i data-feather="chevron-down" class="select-icon"></i>
+                                        </div>
+                                    </div>
+                                    <div class="form-group flex-1">
+                                        <label for="staff-contact">Contact Number</label>
+                                        <input type="text" id="staff-contact" required placeholder="e.g., 555-1234">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="staff-password">Password</label>
+                                    <input type="password" id="staff-password" required placeholder="Assign a password">
+                                </div>
+
+                                <div class="form-actions mt-4 text-right">
+                                    <button type="submit" class="btn btn-primary" id="add-staff-btn">
+                                        <span class="btn-text">Register Staff</span>
+                                        <div class="spinner hidden"></div>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card mt-6">
+                        <div class="card-header flex-between">
+                            <h4 class="card-title">Registered Staff Directory</h4>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Staff ID</th>
+                                        <th>Name & Email</th>
+                                        <th>Department</th>
+                                        <th>Contact Number</th>
+                                        <th class="text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-staff-list-body">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                            <div id="admin-staff-empty-state" class="empty-state hidden">
+                                <div class="empty-icon"><i data-feather="users"></i></div>
+                                <h4>No staff registered</h4>
+                                <p>Staff members that you manually register will display here.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- === Staff Dashboard === -->
+                <section id="dash-staff" class="sub-view hidden">
+                    <div class="dashboard-header mb-4">
+                        <div>
+                            <h3 class="greeting">Your Assigned Tasks</h3>
+                            <p class="subtitle mt-1">Update the status of issues assigned to you.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="table-responsive">
+                            <table class="data-table staff-table">
+                                <thead>
+                                    <tr>
+                                        <th>Task Details</th>
+                                        <th>Location</th>
+                                        <th style="width: 200px;">Update Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="staff-complaints-body">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                            <div id="staff-empty-state" class="empty-state hidden">
+                                <div class="empty-icon"><i data-feather="coffee"></i></div>
+                                <h4>No tasks today</h4>
+                                <p>You have no pending assignments right now.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals & Overlays -->
+    <div id="assign-modal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content card">
+            <div class="modal-header">
+                <h3>Assign Staff</h3>
+                <button class="icon-btn close-modal-btn"><i data-feather="x"></i></button>
+            </div>
+            <div class="modal-body pt-4">
+                <p class="mb-4">Select a maintenance member to handle ticket <strong><span
+                            id="modal-task-id"></span></strong>.</p>
+                <div class="form-group">
+                    <label for="assign-staff-select">Available Staff</label>
+                    <div class="select-wrapper">
+                        <select id="assign-staff-select">
+                            <!-- Populated via JS -->
+                        </select>
+                        <i data-feather="chevron-down" class="select-icon"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer mt-6 flex-end gap-3">
+                <button class="btn btn-outline close-modal-btn">Cancel</button>
+                <button id="btn-confirm-assign" class="btn btn-primary">Assign Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
