@@ -6,7 +6,7 @@ A full-stack web application for managing campus maintenance complaints and staf
 
 | Layer | Technology |
 |---|---|
-| Frontend | HTML, CSS (Vanilla), JavaScript |
+| Frontend | HTML, CSS, JavaScript |
 | Backend | Node.js + Express |
 | Database | MySQL |
 | Icons | Feather Icons |
@@ -14,11 +14,11 @@ A full-stack web application for managing campus maintenance complaints and staf
 
 ## ✨ Features
 
-- **Role-based login** — Separate dashboards for Students, Staff, and Admin
+- **Role-based login** — Separate dashboards for Students, Staff and Admin
 - **Student** — Register, submit maintenance complaints, track status
 - **Admin** — View all complaints, assign to staff, delete tickets, manage staff directory
 - **Staff** — View assigned tasks and mark them as Resolved
-- **Dark/Light theme** — Smooth 0.5s transition, LeetCode-inspired design with green accent
+- **Dark/Light theme** — Smooth transition between dark and light theme
 - **Real-time persistence** — All data stored in MySQL via REST API
 
 ## 🗄️ Database Schema
@@ -77,7 +77,6 @@ Open your browser at: **http://localhost:3000/index.html**
 ## 👨‍💻 Developer
 
 - **GitHub:** [alinasar-dev](https://github.com/alinasar-dev)
-- **Email:** alinasar@gmail.com
 
 ## 📄 License
 
