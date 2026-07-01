@@ -3,7 +3,7 @@
 // Full-Stack Mode: All data from MySQL via Node.js REST API
 // ==========================================================
 
-const API = 'http://localhost:3000/api';
+const API = '/api';
 let currentUser = null;
 let staffCache = []; // Cached staff list for dropdowns
 
@@ -170,23 +170,29 @@ document.querySelectorAll('.login-tab').forEach(btn => {
 
         const inputEl = document.getElementById('login-identifier');
         const labelEl = document.getElementById('login-identifier-label');
-        const regSection = document.getElementById('registration-link-section');
 
         if (currentLoginRole === 'student') {
             labelEl.innerText = 'Email';
             inputEl.placeholder = 'name@campus.edu';
             inputEl.type = 'email';
-            if (regSection) regSection.classList.remove('hidden');
+            // Show Sign Up button on overlay for students
+            const registerOverlayBtn = document.getElementById('register');
+            if (registerOverlayBtn) registerOverlayBtn.classList.remove('hidden');
         } else if (currentLoginRole === 'staff') {
             labelEl.innerText = 'Email';
             inputEl.placeholder = 'staff@campus.edu';
             inputEl.type = 'email';
-            if (regSection) regSection.classList.add('hidden');
+            // Hide Sign Up for non-students and reset to sign-in panel
+            const registerOverlayBtn = document.getElementById('register');
+            if (registerOverlayBtn) registerOverlayBtn.classList.add('hidden');
+            document.getElementById('login-panel-container')?.classList.remove('active');
         } else {
             labelEl.innerText = 'Email';
             inputEl.placeholder = 'admin@campus.edu';
             inputEl.type = 'email';
-            if (regSection) regSection.classList.add('hidden');
+            const registerOverlayBtn = document.getElementById('register');
+            if (registerOverlayBtn) registerOverlayBtn.classList.add('hidden');
+            document.getElementById('login-panel-container')?.classList.remove('active');
         }
     });
 });
@@ -229,18 +235,33 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 });
 
 // ==========================================================
-// REGISTRATION FLOW
+// SLIDING PANEL TOGGLE
 // ==========================================================
-document.getElementById('toggle-register')?.addEventListener('click', (e) => {
+const panelContainer = document.getElementById('login-panel-container');
+const registerToggleBtn = document.getElementById('register');
+const loginToggleBtn = document.getElementById('login');
+
+if (registerToggleBtn) {
+    registerToggleBtn.addEventListener('click', () => {
+        panelContainer.classList.add('active');
+    });
+}
+
+if (loginToggleBtn) {
+    loginToggleBtn.addEventListener('click', () => {
+        panelContainer.classList.remove('active');
+    });
+}
+
+// Mobile fallback toggles
+document.getElementById('mobile-toggle-register')?.addEventListener('click', (e) => {
     e.preventDefault();
-    document.getElementById('login-card-main').classList.add('hidden');
-    document.getElementById('register-card').classList.remove('hidden');
+    panelContainer.classList.add('active');
 });
 
-document.getElementById('toggle-login')?.addEventListener('click', (e) => {
+document.getElementById('mobile-toggle-login')?.addEventListener('click', (e) => {
     e.preventDefault();
-    document.getElementById('register-card').classList.add('hidden');
-    document.getElementById('login-card-main').classList.remove('hidden');
+    panelContainer.classList.remove('active');
 });
 
 document.getElementById('register-form')?.addEventListener('submit', async (e) => {
@@ -275,8 +296,8 @@ document.getElementById('register-form')?.addEventListener('submit', async (e) =
 
     showToast('success', 'Registration Successful', 'Account created! Please log in.');
     document.getElementById('register-form').reset();
-    document.getElementById('register-card').classList.add('hidden');
-    document.getElementById('login-card-main').classList.remove('hidden');
+    // Slide back to Sign In panel
+    document.getElementById('login-panel-container').classList.remove('active');
 });
 
 document.getElementById('logout-btn').addEventListener('click', () => {
@@ -287,7 +308,11 @@ document.getElementById('logout-btn').addEventListener('click', () => {
     document.querySelectorAll('.login-tab').forEach(b => b.classList.remove('active'));
     document.querySelector('.login-tab[data-role="student"]').classList.add('active');
     currentLoginRole = 'student';
-    document.getElementById('registration-link-section').classList.remove('hidden');
+    // Show the Sign Up button on overlay (for student role)
+    const registerOverlayBtn = document.getElementById('register');
+    if (registerOverlayBtn) registerOverlayBtn.classList.remove('hidden');
+    // Reset sliding panel to sign-in side
+    document.getElementById('login-panel-container')?.classList.remove('active');
     const inputEl = document.getElementById('login-identifier');
     inputEl.type = 'email';
     inputEl.placeholder = 'name@campus.edu';

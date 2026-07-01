@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Feather Icons -->
     <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -32,85 +33,100 @@
         </header>
 
         <div class="login-container">
-            <div class="card login-card" id="login-card-main">
-                <div class="login-card-header">
-                    <h2>Sign in</h2>
-                    <p class="subtitle">Enter your details to access your dashboard</p>
+            <div class="login-panel-container" id="login-panel-container">
+
+                <!-- ===== Sign Up Form (hidden by default, slides in) ===== -->
+                <div class="form-container sign-up">
+                    <form id="register-form">
+                        <h1>Create Account</h1>
+                        <div class="social-icons">
+                            <a href="#" class="google-btn" onclick="return false;">
+                                <i class="fa-brands fa-google"></i>
+                                <span>Continue with Google</span>
+                            </a>
+                        </div>
+                        <span class="form-divider-text">or use your email for registration</span>
+                        <div class="sliding-form-group">
+                            <input type="text" id="reg-student-id" placeholder="Student ID (e.g. 10425)" required>
+                        </div>
+                        <div class="sliding-form-group">
+                            <input type="text" id="reg-name" placeholder="Full Name" required>
+                        </div>
+                        <div class="sliding-form-group">
+                            <input type="text" id="reg-department" placeholder="Department" required>
+                        </div>
+                        <div class="sliding-form-group">
+                            <input type="email" id="reg-email" placeholder="Email" required>
+                        </div>
+                        <div class="sliding-form-group">
+                            <input type="password" id="reg-password" placeholder="Password" required>
+                        </div>
+                        <button type="submit" id="register-btn">
+                            <span class="btn-text">Sign Up</span>
+                            <div class="spinner hidden"></div>
+                        </button>
+                        <div class="mobile-auth-toggle">
+                            <p>Already have an account? <a href="#" id="mobile-toggle-login">Sign In</a></p>
+                        </div>
+                    </form>
                 </div>
 
-                <div class="login-tabs">
-                    <button class="login-tab active" data-role="student">Student</button>
-                    <button class="login-tab" data-role="staff">Staff</button>
-                    <button class="login-tab" data-role="admin">Admin</button>
+                <!-- ===== Sign In Form (visible by default) ===== -->
+                <div class="form-container sign-in">
+                    <form id="login-form">
+                        <h1>Sign In</h1>
+                        <div class="login-tabs">
+                            <button type="button" class="login-tab active" data-role="student">Student</button>
+                            <button type="button" class="login-tab" data-role="staff">Staff</button>
+                            <button type="button" class="login-tab" data-role="admin">Admin</button>
+                        </div>
+                        <div class="social-icons">
+                            <a href="#" class="google-btn" onclick="return false;">
+                                <i class="fa-brands fa-google"></i>
+                                <span>Continue with Google</span>
+                            </a>
+                        </div>
+                        <span class="form-divider-text">or use your email and password</span>
+                        <label for="login-identifier" id="login-identifier-label" class="sr-only">Email</label>
+                        <div class="sliding-form-group">
+                            <input type="email" id="login-identifier" placeholder="name@campus.edu" required>
+                        </div>
+                        <div class="sliding-form-group">
+                            <input type="password" id="login-password" placeholder="••••••••" required>
+                        </div>
+                        <div class="form-extras">
+                            <div class="form-check">
+                                <input type="checkbox" id="remember">
+                                <label for="remember">Remember me</label>
+                            </div>
+                            <a href="#">Forgot Password?</a>
+                        </div>
+                        <button type="submit" id="login-btn">
+                            <span class="btn-text">Sign In</span>
+                            <div class="spinner hidden"></div>
+                        </button>
+                        <div class="mobile-auth-toggle">
+                            <p>New student? <a href="#" id="mobile-toggle-register">Create an account</a></p>
+                        </div>
+                    </form>
                 </div>
 
-                <form id="login-form">
-                    <div class="form-group">
-                        <label for="login-identifier" id="login-identifier-label">Email</label>
-                        <input type="text" id="login-identifier" required placeholder="name@campus.edu">
-                    </div>
-                    <div class="form-group">
-                        <label for="login-password">Password</label>
-                        <input type="password" id="login-password" required placeholder="••••••••">
-                    </div>
-
-                    <div class="form-row-between">
-                        <div class="form-check">
-                            <input type="checkbox" id="remember">
-                            <label for="remember">Remember me</label>
+                <!-- ===== Toggle Overlay (Purple Gradient) ===== -->
+                <div class="toggle-container">
+                    <div class="toggle">
+                        <div class="toggle-panel toggle-left">
+                            <h1>Welcome Back!</h1>
+                            <p>Already have an account? Sign in to access your dashboard</p>
+                            <button type="button" class="toggle-btn" id="login">Sign In</button>
+                        </div>
+                        <div class="toggle-panel toggle-right" id="toggle-right-panel">
+                            <h1>Hello, Scholar!</h1>
+                            <p>New student? Register to start reporting campus issues</p>
+                            <button type="button" class="toggle-btn" id="register">Sign Up</button>
                         </div>
                     </div>
-
-                    <button type="submit" class="btn btn-primary btn-block" id="login-btn">
-                        <span class="btn-text">Log in</span>
-                        <div class="spinner hidden"></div>
-                    </button>
-                    <div class="mt-4 text-center" id="registration-link-section">
-                        <p class="subtitle text-xs">Are you a new student? <a href="#" id="toggle-register">Create an
-                                account</a></p>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Registration Card (Hidden by default) -->
-            <div class="card login-card hidden" id="register-card">
-                <div class="login-card-header">
-                    <h2>Student Registration</h2>
-                    <p class="subtitle">Create an account to report campus issues</p>
                 </div>
 
-                <form id="register-form">
-                    <div class="form-group">
-                        <label for="reg-student-id">Student ID</label>
-                        <input type="text" id="reg-student-id" required placeholder="e.g. 10425">
-                    </div>
-                    <div class="form-group">
-                        <label for="reg-name">Full Name</label>
-                        <input type="text" id="reg-name" required placeholder="John Doe">
-                    </div>
-                    <div class="form-group">
-                        <label for="reg-department">Department</label>
-                        <input type="text" id="reg-department" required placeholder="Computer Science">
-                    </div>
-                    <div class="form-group">
-                        <label for="reg-email">Email</label>
-                        <input type="email" id="reg-email" required placeholder="john@campus.edu">
-                    </div>
-                    <div class="form-group">
-                        <label for="reg-password">Password</label>
-                        <input type="password" id="reg-password" required placeholder="••••••••">
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-block mt-4" id="register-btn">
-                        <span class="btn-text">Register</span>
-                        <div class="spinner hidden"></div>
-                    </button>
-
-                    <div class="mt-4 text-center">
-                        <p class="subtitle text-xs">Already have an account? <a href="#" id="toggle-login">Sign in</a>
-                        </p>
-                    </div>
-                </form>
             </div>
         </div>
 

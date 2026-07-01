@@ -8,10 +8,10 @@
     /* Elevated card/sidebar surface */
     --clr-surface-2: #333333;
     /* Slightly lighter surface for inputs */
-    --clr-primary: #34d371;
-    /* Emerald green accent */
-    --clr-primary-hover: #6ee772;
-    /* Lighter emerald on hover */
+    --clr-primary: #7c4dff;
+    /* Deep purple accent */
+    --clr-primary-hover: #9e7aff;
+    /* Lighter purple on hover */
     --clr-text-main: #eff1f6;
     /* Off-white main text */
     --clr-text-muted: #8d9299;
@@ -53,9 +53,9 @@
     --clr-bg: #f7f8fa;
     --clr-surface: #ffffff;
     --clr-surface-2: #f0f0f0;
-    --clr-primary: #34d371;
-    /* Darker forest green for light mode contrast */
-    --clr-primary-hover: #6ee772;
+    --clr-primary: #651fff;
+    /* Deeper purple for light mode contrast */
+    --clr-primary-hover: #7c4dff;
     --clr-text-main: #1a1a1a;
     --clr-text-muted: #6b7280;
     --clr-border: #e0e0e0;
@@ -261,7 +261,7 @@ button {
 
 .btn-primary:hover {
     background-color: var(--clr-primary-hover);
-    box-shadow: 0 4px 16px rgba(52, 211, 153, 0.35);
+    box-shadow: 0 4px 16px rgba(124, 77, 255, 0.35);
 }
 
 .btn-outline {
@@ -372,7 +372,7 @@ textarea:focus,
 select:focus {
     outline: none;
     border-color: var(--clr-primary);
-    box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2);
+    box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.25);
 }
 
 .select-wrapper {
@@ -622,52 +622,343 @@ select:focus {
     opacity: 0.7;
 }
 
-.login-card {
-    width: 100%;
-    max-width: 430px;
-    padding: 2.5rem;
+/* ================== SLIDING LOGIN PANEL ================== */
+.login-panel-container {
+    background-color: var(--clr-surface);
+    border-radius: 30px;
     box-shadow: var(--shadow-lg);
     border: 1px solid var(--clr-border);
+    position: relative;
+    overflow: hidden;
+    width: 850px;
+    max-width: 100%;
+    min-height: 550px;
 }
 
-.login-card-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.login-card-header h2 {
+.login-panel-container h1 {
     font-size: 1.5rem;
     font-weight: 700;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
+    color: var(--clr-text-main);
 }
 
-.login-tabs {
+.login-panel-container .form-divider-text {
+    font-size: 12px;
+    color: var(--clr-text-muted);
+    margin: 6px 0 4px;
+}
+
+/* Form Panels (Sign In / Sign Up) */
+.form-container {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    transition: all 0.6s ease-in-out;
+}
+
+.form-container form {
+    background-color: var(--clr-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 40px;
+    height: 100%;
+}
+
+.form-container input[type="text"],
+.form-container input[type="email"],
+.form-container input[type="password"] {
+    background-color: var(--clr-surface-2);
+    border: 1px solid var(--clr-border);
+    color: var(--clr-text-main);
+    margin: 5px 0;
+    padding: 10px 15px;
+    font-size: 13px;
+    border-radius: 8px;
+    width: 100%;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-container input:focus {
+    border-color: var(--clr-primary);
+    box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.25);
+}
+
+.sliding-form-group {
+    width: 100%;
+}
+
+/* Sign In Panel */
+.sign-in {
+    left: 0;
+    width: 50%;
+    z-index: 2;
+}
+
+.login-panel-container.active .sign-in {
+    transform: translateX(100%);
+}
+
+/* Sign Up Panel */
+.sign-up {
+    left: 0;
+    width: 50%;
+    opacity: 0;
+    z-index: 1;
+}
+
+.login-panel-container.active .sign-up {
+    transform: translateX(100%);
+    opacity: 1;
+    z-index: 5;
+    animation: panelMove 0.6s;
+}
+
+@keyframes panelMove {
+    0%, 49.99% {
+        opacity: 0;
+        z-index: 1;
+    }
+    50%, 100% {
+        opacity: 1;
+        z-index: 5;
+    }
+}
+
+/* Google Button (Inactive) */
+.social-icons {
+    width: 100%;
     display: flex;
     justify-content: center;
+    margin: 12px 0 6px;
+}
+
+.google-btn {
+    width: 100%;
+    max-width: 220px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 1px solid var(--clr-border);
+    border-radius: 22px;
+    background: var(--clr-surface);
+    color: var(--clr-text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: default;
+    opacity: 0.55;
+    transition: opacity 0.2s;
+}
+
+.google-btn i {
+    font-size: 15px;
+}
+
+/* Form Submit Buttons */
+.form-container button[type="submit"] {
+    background-color: var(--clr-primary);
+    color: #fff;
+    font-size: 12px;
+    padding: 10px 45px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 10px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     gap: 0.5rem;
-    margin-bottom: 2rem;
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.form-container button[type="submit"]:hover {
+    background-color: var(--clr-primary-hover);
+    box-shadow: 0 4px 16px rgba(124, 77, 255, 0.35);
+}
+
+/* Form Extras (Remember Me + Forgot Password) */
+.form-extras {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 6px 0;
+    font-size: 13px;
+}
+
+.form-extras a {
+    color: var(--clr-text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s;
+}
+
+.form-extras a:hover {
+    color: var(--clr-primary);
+}
+
+/* ================== TOGGLE OVERLAY ================== */
+.toggle-container {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    transition: all 0.6s ease-in-out;
+    border-radius: 150px 0 0 100px;
+    z-index: 1000;
+}
+
+.login-panel-container.active .toggle-container {
+    transform: translateX(-100%);
+    border-radius: 0 150px 100px 0;
+}
+
+.toggle {
+    background-color: #512da8;
+    height: 100%;
+    background: linear-gradient(to right, #5c6bc0, #512da8);
+    color: white;
+    position: relative;
+    left: -100%;
+    width: 200%;
+    transform: translateX(0);
+    transition: all 0.6s ease-in-out;
+}
+
+.login-panel-container.active .toggle {
+    transform: translateX(50%);
+}
+
+.toggle-panel {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    top: 0;
+    padding: 0 30px;
+    text-align: center;
+    transition: all 0.6s ease-in-out;
+}
+
+.toggle-panel h1 {
+    color: #fff;
+    font-size: 1.75rem;
+}
+
+.toggle-panel p {
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.3px;
+    margin: 15px 0;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.toggle-left {
+    transform: translateX(-200%);
+}
+
+.login-panel-container.active .toggle-left {
+    transform: translateX(0);
+}
+
+.toggle-right {
+    right: 0;
+    transform: translateX(0);
+}
+
+.login-panel-container.active .toggle-right {
+    transform: translateX(200%);
+}
+
+.toggle-btn {
+    background-color: transparent;
+    border: 1px solid white;
+    color: white;
+    font-size: 12px;
+    padding: 10px 45px;
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.toggle-btn:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Login Role Tabs (inside sliding sign-in panel) */
+.login-tabs {
+    display: flex;
+    gap: 0.35rem;
+    margin: 8px 0 4px;
     background: var(--clr-bg);
-    padding: 0.3rem;
-    border-radius: var(--radius-md);
+    padding: 0.25rem;
+    border-radius: 8px;
+    width: 100%;
 }
 
 .login-tab {
     flex: 1;
     background: transparent;
     border: none;
-    padding: 0.5rem;
-    border-radius: var(--radius-sm);
+    padding: 0.4rem;
+    border-radius: 6px;
     color: var(--clr-text-muted);
     font-weight: 500;
+    font-size: 12px;
     cursor: pointer;
-    transition: all var(--transition-base);
+    transition: all 0.25s ease;
 }
 
 .login-tab.active {
     background: var(--clr-primary);
-    color: #1a1a1a;
+    color: #fff;
     font-weight: 600;
     box-shadow: var(--shadow-sm);
+}
+
+/* Screen-reader only utility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+/* Mobile auth toggle (shown only on small screens) */
+.mobile-auth-toggle {
+    display: none;
+    text-align: center;
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--clr-text-muted);
+}
+
+.mobile-auth-toggle a {
+    color: var(--clr-primary);
+    cursor: pointer;
+    font-weight: 500;
 }
 
 /* ================== APP SHELL (SIDEBAR + MAIN) ================== */
@@ -764,7 +1055,7 @@ select:focus {
 
 .nav-item.active {
     color: var(--clr-primary);
-    background-color: rgba(52, 211, 153, 0.1);
+    background-color: rgba(124, 77, 255, 0.12);
     border-right: 3px solid var(--clr-primary);
 }
 
@@ -1001,9 +1292,9 @@ select:focus {
 }
 
 .badge-progress {
-    background-color: rgba(52, 211, 153, 0.12);
+    background-color: rgba(124, 77, 255, 0.12);
     color: var(--clr-primary);
-    border: 1px solid rgba(52, 211, 153, 0.25);
+    border: 1px solid rgba(124, 77, 255, 0.25);
 }
 
 .badge-progress::before {
@@ -1243,6 +1534,46 @@ select:focus {
 
 /* ================== RESPONSIVE ================== */
 @media (max-width: 768px) {
+    .login-panel-container {
+        border-radius: 20px;
+        min-height: auto;
+        width: 100%;
+        max-width: 420px;
+    }
+
+    .form-container {
+        position: relative !important;
+        width: 100% !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .sign-up {
+        display: none;
+    }
+
+    .login-panel-container.active .sign-up {
+        display: flex;
+        transform: none !important;
+        animation: none;
+    }
+
+    .login-panel-container.active .sign-in {
+        display: none;
+    }
+
+    .toggle-container {
+        display: none;
+    }
+
+    .form-container form {
+        padding: 2rem 1.5rem;
+    }
+
+    .mobile-auth-toggle {
+        display: block;
+    }
+
     .sidebar {
         position: fixed;
         left: 0;
