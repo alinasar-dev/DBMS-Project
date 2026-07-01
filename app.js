@@ -153,29 +153,38 @@ async function apiCall(url, options = {}) {
 // ==========================================================
 // NAVIGATION & ROUTING
 // ==========================================================
-const views = {
-    login: document.getElementById('login-view'),
-    app: document.getElementById('app-shell')
-};
+// NAVIGATION & ROUTING
+// ==========================================================
+function getViews() {
+    return {
+        login: document.getElementById('login-view'),
+        app: document.getElementById('app-shell')
+    };
+}
 
-const subViews = {
-    student: document.getElementById('dash-student'),
-    submit: document.getElementById('dash-submit'),
-    admin: document.getElementById('dash-admin'),
-    adminResolved: document.getElementById('dash-admin-resolved'),
-    adminAddStaff: document.getElementById('dash-admin-add-staff'),
-    staff: document.getElementById('dash-staff')
-};
+function getSubViews() {
+    return {
+        student: document.getElementById('dash-student'),
+        submit: document.getElementById('dash-submit'),
+        admin: document.getElementById('dash-admin'),
+        adminResolved: document.getElementById('dash-admin-resolved'),
+        adminAddStaff: document.getElementById('dash-admin-add-staff'),
+        staff: document.getElementById('dash-staff')
+    };
+}
 
 function showMainView(viewName) {
-    Object.values(views).forEach(v => v.classList.add('hidden'));
-    views[viewName].classList.remove('hidden');
+    const vList = getViews();
+    Object.values(vList).forEach(v => v?.classList.add('hidden'));
+    if (vList[viewName]) vList[viewName].classList.remove('hidden');
 }
 
 function showSubView(viewName, title) {
-    Object.values(subViews).forEach(v => v.classList.add('hidden'));
-    if (subViews[viewName]) subViews[viewName].classList.remove('hidden');
-    document.getElementById('top-page-title').innerText = title;
+    const sList = getSubViews();
+    Object.values(sList).forEach(v => v?.classList.add('hidden'));
+    if (sList[viewName]) sList[viewName].classList.remove('hidden');
+    const titleEl = document.getElementById('top-page-title');
+    if (titleEl && title) titleEl.innerText = title;
     document.querySelectorAll('.nav-item').forEach(el => {
         el.classList.remove('active');
         if (el.dataset.target === viewName) el.classList.add('active');
@@ -185,6 +194,7 @@ function showSubView(viewName, title) {
 
 function generateSidebarNav(role) {
     const navContainer = document.getElementById('sidebar-nav-container');
+    if (!navContainer) return;
     navContainer.innerHTML = '';
 
     let links = [];
@@ -374,17 +384,23 @@ document.getElementById('mobile-menu-toggle')?.addEventListener('click', () => {
 // STUDENT DASHBOARD
 // ==========================================================
 async function renderStudentDash() {
-    document.getElementById('student-greeting-name').innerText = currentUser.name;
+    const tbody = document.getElementById('student-complaints-body');
+    const emptyState = document.getElementById('student-empty-state');
+    if (!tbody || !emptyState || !currentUser) return;
+
+    const greetingName = document.getElementById('student-greeting-name');
+    if (greetingName) greetingName.innerText = currentUser.name;
 
     const allComplaints = await apiCall(`${API}/complaints`);
     const myComplaints = Array.isArray(allComplaints) ? allComplaints.filter(c => c.student_id === currentUser.id) : [];
 
-    document.getElementById('stu-stat-total').innerText = myComplaints.length;
-    document.getElementById('stu-stat-pending').innerText = myComplaints.filter(c => c.status !== 'Resolved').length;
-    document.getElementById('stu-stat-resolved').innerText = myComplaints.filter(c => c.status === 'Resolved').length;
+    const statTotal = document.getElementById('stu-stat-total');
+    if (statTotal) statTotal.innerText = myComplaints.length;
+    const statPending = document.getElementById('stu-stat-pending');
+    if (statPending) statPending.innerText = myComplaints.filter(c => c.status !== 'Resolved').length;
+    const statResolved = document.getElementById('stu-stat-resolved');
+    if (statResolved) statResolved.innerText = myComplaints.filter(c => c.status === 'Resolved').length;
 
-    const tbody = document.getElementById('student-complaints-body');
-    const emptyState = document.getElementById('student-empty-state');
     tbody.innerHTML = '';
 
     if (myComplaints.length === 0) {
@@ -455,6 +471,7 @@ let activeModalComplaintId = null;
 async function renderAdminDash() {
     const tbody = document.getElementById('admin-complaints-body');
     const emptyState = document.getElementById('admin-empty-state');
+    if (!tbody || !emptyState) return;
     tbody.innerHTML = '';
 
     const allComplaints = await apiCall(`${API}/complaints`);
@@ -528,6 +545,7 @@ async function renderAdminDash() {
 async function renderAdminResolvedDash() {
     const tbody = document.getElementById('admin-resolved-body');
     const emptyState = document.getElementById('admin-resolved-empty-state');
+    if (!tbody || !emptyState) return;
     tbody.innerHTML = '';
 
     const allComplaints = await apiCall(`${API}/complaints`);
@@ -631,6 +649,7 @@ document.getElementById('btn-confirm-assign')?.addEventListener('click', async (
 async function renderAdminStaffList() {
     const tbody = document.getElementById('admin-staff-list-body');
     const emptyState = document.getElementById('admin-staff-empty-state');
+    if (!tbody || !emptyState) return;
     tbody.innerHTML = '';
 
     const staffList = await apiCall(`${API}/staff`);
@@ -717,6 +736,7 @@ document.getElementById('add-staff-form')?.addEventListener('submit', async (e) 
 async function renderStaffDash() {
     const tbody = document.getElementById('staff-complaints-body');
     const emptyState = document.getElementById('staff-empty-state');
+    if (!tbody || !emptyState || !currentUser) return;
     tbody.innerHTML = '';
 
     const allComplaints = await apiCall(`${API}/complaints`);

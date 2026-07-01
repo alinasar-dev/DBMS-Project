@@ -503,13 +503,17 @@ select:focus {
 
 .header-links {
     display: flex;
+    align-items: center;
     gap: 1.5rem;
 }
 
 .header-links a {
+    display: inline-flex;
+    align-items: center;
     font-size: 0.875rem;
     color: var(--clr-text-muted);
     font-weight: 500;
+    text-decoration: none;
 }
 
 .header-links a:hover {
