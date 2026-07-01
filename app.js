@@ -88,13 +88,21 @@ async function checkSession() {
 }
 
 function initThemeToggle() {
+    const html = document.documentElement;
+    const savedTheme = localStorage.getItem('cmms_theme') || 'light';
+    html.setAttribute('data-theme', savedTheme);
+
     const toggles = document.querySelectorAll('.theme-toggle');
+    toggles.forEach(btn => {
+        btn.innerHTML = `<i data-feather="${savedTheme === 'dark' ? 'sun' : 'moon'}"></i>`;
+    });
+
     toggles.forEach(toggle => {
         toggle.addEventListener('click', () => {
-            const html = document.documentElement;
             const currentTheme = html.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('cmms_theme', newTheme);
             toggles.forEach(btn => {
                 btn.innerHTML = `<i data-feather="${newTheme === 'dark' ? 'sun' : 'moon'}"></i>`;
             });

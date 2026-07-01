@@ -672,15 +672,18 @@ select:focus {
 
 .form-container input[type="text"],
 .form-container input[type="email"],
-.form-container input[type="password"] {
+.form-container input[type="password"],
+.form-container select {
     background-color: var(--clr-surface-2);
     border: 1px solid var(--clr-border);
     color: var(--clr-text-main);
-    margin: 5px 0;
-    padding: 10px 15px;
+    margin: 4px 0;
+    padding: 8px 12px;
     font-size: 13px;
     border-radius: 8px;
     width: 100%;
+    height: 38px;
+    box-sizing: border-box;
     outline: none;
     font-family: inherit;
     transition: border-color 0.2s, box-shadow 0.2s;
@@ -766,27 +769,29 @@ select:focus {
 
 /* Form Submit Buttons */
 .form-container button[type="submit"] {
-    background-color: var(--clr-primary);
+    background: linear-gradient(to right, #5c6bc0, #512da8);
     color: #fff;
-    font-size: 12px;
-    padding: 10px 45px;
-    border: 1px solid transparent;
+    font-size: 13px;
+    padding: 0;
+    border: none;
     border-radius: 8px;
     font-weight: 600;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    margin-top: 10px;
+    margin-top: 12px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    transition: background-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    height: 40px;
+    transition: all 0.25s ease;
 }
 
 .form-container button[type="submit"]:hover {
-    background-color: var(--clr-primary-hover);
-    box-shadow: 0 4px 16px rgba(124, 77, 255, 0.35);
+    background: linear-gradient(to right, #512da8, #5c6bc0);
+    box-shadow: 0 4px 16px rgba(81, 45, 168, 0.4);
 }
 
 /* Form Extras (Remember Me + Forgot Password) */
@@ -910,29 +915,30 @@ select:focus {
 /* Login Role Tabs (inside sliding sign-in panel) */
 .login-tabs {
     display: flex;
-    gap: 0.35rem;
-    margin: 8px 0 4px;
-    background: var(--clr-bg);
-    padding: 0.25rem;
-    border-radius: 8px;
+    gap: 0.4rem;
+    margin: 10px 0 8px;
+    background: var(--clr-surface-2);
+    padding: 0.35rem;
+    border-radius: 10px;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .login-tab {
     flex: 1;
     background: transparent;
     border: none;
-    padding: 0.4rem;
-    border-radius: 6px;
+    padding: 0.55rem 0.4rem;
+    border-radius: 7px;
     color: var(--clr-text-muted);
     font-weight: 500;
-    font-size: 12px;
+    font-size: 13px;
     cursor: pointer;
     transition: all 0.25s ease;
 }
 
 .login-tab.active {
-    background: var(--clr-primary);
+    background: linear-gradient(to right, #5c6bc0, #512da8);
     color: #fff;
     font-weight: 600;
     box-shadow: var(--shadow-sm);
