@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Sign Up | CMMS</title>
+    <!-- Modern Sans-Serif Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body data-page="login">
+
+    <!-- ==================== VIEW: LOGIN ==================== -->
+    <div id="login-view" class="view active">
+        <!-- Login Header -->
+        <header class="login-header">
+            <div class="header-container">
+                <a href="/" class="brand" style="text-decoration: none; color: inherit;">
+                    <i data-feather="box" class="brand-icon"></i>
+                    <span>Campus Maintenance Management System</span>
+                </a>
+                <div class="header-links">
+                    <a href="/" class="nav-link-item"><i data-feather="home" style="width:16px; height:16px; vertical-align:middle; margin-right:4px;"></i> Home</a>
+                    <button class="icon-btn theme-toggle" title="Toggle Theme"><i data-feather="sun"></i></button>
+                    <a href="#" id="contact-support-link">Contact Support</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="login-container">
+            <div class="login-panel-container" id="login-panel-container">
+
+                <!-- ===== Sign Up Form (hidden by default, slides in) ===== -->
+                <div class="form-container sign-up">
+                    <form id="register-form">
+                        <h1>Create Account</h1>
+                        <div class="social-icons">
+                            <a href="#" class="google-btn" onclick="return false;">
+                                <i class="fa-brands fa-google"></i>
+                                <span>Continue with Google</span>
+                            </a>
+                        </div>
+                        <span class="form-divider-text">or use your email for registration</span>
+                        <div class="sliding-form-group">
+                            <input type="text" id="reg-student-id" placeholder="Student ID (e.g. 10425)" required>
+                        </div>
+                        <div class="sliding-form-group">
+                            <input type="text" id="reg-name" placeholder="Full Name" required>
+                        </div>
+                        <div class="sliding-form-group">
+                            <input type="email" id="reg-email" placeholder="Email Address" required>
+                        </div>
+                        <div class="sliding-form-group">
+                            <input type="password" id="reg-password" placeholder="Password" required>
+                        </div>
+                        <div class="sliding-form-group">
+                            <select id="reg-department" required>
+                                <option value="" disabled selected>Select Department</option>
+                                <option value="Computer Science">Computer Science</option>
+                                <option value="Electrical Engineering">Electrical Engineering</option>
+                                <option value="Mechanical Engineering">Mechanical Engineering</option>
+                                <option value="Civil Engineering">Civil Engineering</option>
+                                <option value="Chemical Engineering">Chemical Engineering</option>
+                                <option value="Architecture">Architecture</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="sliding-btn" id="reg-btn">Sign Up</button>
+                    </form>
+                </div>
+
+                <!-- ===== Sign In Form ===== -->
+                <div class="form-container sign-in">
+                    <form id="login-form">
+                        <h1>Sign In</h1>
+                        <!-- Role Selector Tabs -->
+                        <div class="role-selector">
+                            <button type="button" class="login-tab active" data-role="student">Student</button>
+                            <button type="button" class="login-tab" data-role="staff">Staff</button>
+                            <button type="button" class="login-tab" data-role="admin">Admin</button>
+                        </div>
+
+                        <div class="social-icons">
+                            <a href="#" class="google-btn" onclick="return false;">
+                                <i class="fa-brands fa-google"></i>
+                                <span>Sign in with Google</span>
+                            </a>
+                        </div>
+                        <span class="form-divider-text">or sign in with credentials</span>
+
+                        <div class="sliding-form-group">
+                            <label id="login-identifier-label">Email</label>
+                            <input type="email" id="login-identifier" placeholder="name@campus.edu" required>
+                        </div>
+                        <div class="sliding-form-group">
+                            <label>Password</label>
+                            <input type="password" id="login-password" placeholder="••••••••" required>
+                        </div>
+                        <a href="#" class="forgot-link" onclick="showToast('info', 'Reset Password', 'Please contact IT Support at helpdesk@campus.edu'); return false;">Forgot your password?</a>
+                        <button type="submit" class="sliding-btn" id="login-btn">Sign In</button>
+                    </form>
+                </div>
+
+                <!-- ===== Toggle Overlay Container ===== -->
+                <div class="toggle-container">
+                    <div class="toggle">
+                        <div class="toggle-panel toggle-left">
+                            <h1>Welcome Back!</h1>
+                            <p>Enter your personal details to access the CMMS portal</p>
+                            <button type="button" class="toggle-btn" id="login">Sign In</button>
+                        </div>
+                        <div class="toggle-panel toggle-right" id="toggle-right-panel">
+                            <h1>Hello, Scholar!</h1>
+                            <p>New student? Register to start reporting campus issues</p>
+                            <button type="button" class="toggle-btn" id="register">Sign Up</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ==================== LOGIN FOOTER ==================== -->
+        <footer class="login-footer" id="login-footer">
+            <div class="login-footer-inner">
+
+                <!-- Developer Info -->
+                <div class="footer-section">
+                    <p class="footer-label">Developer</p>
+                    <div class="footer-links">
+                        <a href="https://github.com/alinasar-dev" target="_blank" class="footer-link">
+                            <i data-feather="github" class="footer-icon"></i>
+                            <span>alinasar-dev</span>
+                        </a>
+                        <a href="mailto:www.alinasar@gmail.com" class="footer-link">
+                            <i data-feather="mail" class="footer-icon"></i>
+                            <span>www.alinasar@gmail.com</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Divider -->
+                <div class="footer-divider"></div>
+
+                <!-- Info Row -->
+                <div class="footer-bottom">
+                    <span class="footer-copy">
+                        <i data-feather="copyright" class="footer-icon-sm"></i>
+                        <span id="footer-year"></span> CMMS &mdash; Campus Maintenance Management System
+                    </span>
+                    <span class="footer-region">
+                        <i data-feather="globe" class="footer-icon-sm"></i>
+                        <span>India (IN)</span>
+                    </span>
+                    <span class="footer-rights">
+                        All rights reserved.
+                    </span>
+                </div>
+
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

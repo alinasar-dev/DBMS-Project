@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal | CMMS</title>
+    <!-- Modern Sans-Serif Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body data-page="admin">
+
+    <!-- ==================== VIEW: APP SHELL ==================== -->
+    <div id="app-shell" class="view active">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="brand" style="text-decoration: none; color: inherit;">
+                    <i data-feather="box" class="brand-icon"></i>
+                    <span>CMMS</span>
+                </a>
+            </div>
+
+            <div class="sidebar-user">
+                <div class="avatar" id="nav-avatar">A</div>
+                <div class="user-info">
+                    <span id="nav-name" class="name">Loading...</span>
+                    <span id="nav-role" class="role">admin</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav" id="sidebar-nav-container">
+                <!-- Links dynamically populated by JS based on role -->
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="nav-item btn-ghost text-danger" id="logout-btn">
+                    <i data-feather="log-out"></i>
+                    Log out
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-workspace">
+            <header class="top-navbar">
+                <div class="navbar-left">
+                    <button class="icon-btn mobile-menu-toggle" id="mobile-menu-toggle">
+                        <i data-feather="menu"></i>
+                    </button>
+                    <h2 class="page-title" id="top-page-title">Admin Panel</h2>
+                </div>
+                <div class="navbar-right">
+                    <a href="/" class="nav-link-item style-home-btn" style="margin-right: 12px; text-decoration: none; color: var(--text-muted); font-size: 0.875rem;"><i data-feather="home" style="width:16px; height:16px; vertical-align:middle; margin-right:4px;"></i> Home</a>
+                    <button class="icon-btn theme-toggle" title="Toggle Theme"><i data-feather="sun"></i></button>
+                </div>
+            </header>
+
+            <div class="content-area">
+
+                <!-- === Admin Dashboard === -->
+                <section id="dash-admin" class="sub-view active">
+                    <div class="dashboard-header mb-4">
+                        <div>
+                            <h3 class="greeting">Administrator Overview</h3>
+                            <p class="subtitle mt-1">Manage and assign open maintenance requests.</p>
+                        </div>
+                    </div>
+
+                    <!-- Analytics Row -->
+                    <div class="card mb-6 pattern-bg">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">Resolution Analytics</h4>
+                            <div class="progress-bar-container">
+                                <div class="progress-labels">
+                                    <span class="progress-label text-success">Resolved (<span id="admin-p-resolved">0</span>)</span>
+                                    <span class="progress-label text-warning">Pending/Progress (<span id="admin-p-pending">0</span>)</span>
+                                </div>
+                                <div class="progress-track">
+                                    <div id="progress-fill" class="progress-fill bg-success"></div>
+                                </div>
+                                <div class="text-right mt-1 subtitle text-xs">Total: <span id="admin-p-total">0</span> Complaints</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">All Complaints Queue</h4>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ticket ID</th>
+                                        <th>Reported By</th>
+                                        <th>Category</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                        <th class="text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-complaints-body">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                            <div id="admin-empty-state" class="empty-state hidden">
+                                <div class="empty-icon"><i data-feather="check"></i></div>
+                                <h4>All caught up!</h4>
+                                <p>There are no active complaints in the system.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- === Admin Resolved Tasks === -->
+                <section id="dash-admin-resolved" class="sub-view hidden">
+                    <div class="dashboard-header mb-4">
+                        <div>
+                            <h3 class="greeting">Resolved Complaints</h3>
+                            <p class="subtitle mt-1">History of all fully resolved maintenance requests.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header flex-between">
+                            <h4 class="card-title">Resolved Queue</h4>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ticket ID</th>
+                                        <th>Reported By</th>
+                                        <th>Category</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                        <th class="text-right">Assigned Staff</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-resolved-body">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                            <div id="admin-resolved-empty-state" class="empty-state hidden">
+                                <div class="empty-icon"><i data-feather="archive"></i></div>
+                                <h4>No resolved complaints</h4>
+                                <p>Complaints marked as resolved will appear here.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- === Admin Add Staff === -->
+                <section id="dash-admin-add-staff" class="sub-view hidden">
+                    <button class="btn btn-link mb-4" id="btn-back-dash-admin">
+                        <i data-feather="arrow-left"></i> Back to Dashboard
+                    </button>
+
+                    <div class="card form-card">
+                        <div class="card-header">
+                            <h4 class="card-title">Register New Maintenance Staff</h4>
+                            <p class="subtitle">Add a new staff member to the system for task routing.</p>
+                        </div>
+                        <div class="card-body">
+                            <form id="add-staff-form">
+                                <div class="form-row">
+                                    <div class="form-group flex-1">
+                                        <label for="staff-name">Staff Name</label>
+                                        <input type="text" id="staff-name" required placeholder="e.g., John Doe">
+                                    </div>
+                                    <div class="form-group flex-1">
+                                        <label for="staff-email">Email Address</label>
+                                        <input type="email" id="staff-email" required placeholder="staff@campus.edu">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group flex-1">
+                                        <label for="staff-department">Department</label>
+                                        <div class="select-wrapper">
+                                            <select id="staff-department" required>
+                                                <option value="" disabled selected>Select Department</option>
+                                                <option value="Electrical">Electrical</option>
+                                                <option value="Plumbing">Plumbing</option>
+                                                <option value="IT">IT/Networking</option>
+                                                <option value="Infrastructure">Infrastructure</option>
+                                            </select>
+                                            <i data-feather="chevron-down" class="select-icon"></i>
+                                        </div>
+                                    </div>
+                                    <div class="form-group flex-1">
+                                        <label for="staff-contact">Contact Number</label>
+                                        <input type="text" id="staff-contact" required placeholder="e.g., 555-1234">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="staff-password">Password</label>
+                                    <input type="password" id="staff-password" required placeholder="Assign a password">
+                                </div>
+
+                                <div class="form-actions mt-4 text-right">
+                                    <button type="submit" class="btn btn-primary" id="add-staff-btn">
+                                        <span class="btn-text">Register Staff</span>
+                                        <div class="spinner hidden"></div>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card mt-6">
+                        <div class="card-header flex-between">
+                            <h4 class="card-title">Registered Staff Directory</h4>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Staff ID</th>
+                                        <th>Name & Email</th>
+                                        <th>Department</th>
+                                        <th>Contact Number</th>
+                                        <th class="text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-staff-list-body">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                            <div id="admin-staff-empty-state" class="empty-state hidden">
+                                <div class="empty-icon"><i data-feather="users"></i></div>
+                                <h4>No staff registered</h4>
+                                <p>Staff members that you manually register will display here.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals & Overlays -->
+    <div id="assign-modal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content card">
+            <div class="modal-header">
+                <h3>Assign Staff</h3>
+                <button class="icon-btn close-modal-btn"><i data-feather="x"></i></button>
+            </div>
+            <div class="modal-body pt-4">
+                <p class="mb-4">Select a maintenance member to handle ticket <strong><span id="modal-task-id"></span></strong>.</p>
+                <div class="form-group">
+                    <label for="assign-staff-select">Available Staff</label>
+                    <div class="select-wrapper">
+                        <select id="assign-staff-select">
+                            <!-- Populated via JS -->
+                        </select>
+                        <i data-feather="chevron-down" class="select-icon"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer mt-6 flex-end gap-3">
+                <button class="btn btn-outline close-modal-btn">Cancel</button>
+                <button id="btn-confirm-assign" class="btn btn-primary">Assign Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

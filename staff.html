@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Portal | CMMS</title>
+    <!-- Modern Sans-Serif Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body data-page="staff">
+
+    <!-- ==================== VIEW: APP SHELL ==================== -->
+    <div id="app-shell" class="view active">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="brand" style="text-decoration: none; color: inherit;">
+                    <i data-feather="box" class="brand-icon"></i>
+                    <span>CMMS</span>
+                </a>
+            </div>
+
+            <div class="sidebar-user">
+                <div class="avatar" id="nav-avatar">U</div>
+                <div class="user-info">
+                    <span id="nav-name" class="name">Loading...</span>
+                    <span id="nav-role" class="role">staff</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav" id="sidebar-nav-container">
+                <!-- Links dynamically populated by JS based on role -->
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="nav-item btn-ghost text-danger" id="logout-btn">
+                    <i data-feather="log-out"></i>
+                    Log out
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-workspace">
+            <header class="top-navbar">
+                <div class="navbar-left">
+                    <button class="icon-btn mobile-menu-toggle" id="mobile-menu-toggle">
+                        <i data-feather="menu"></i>
+                    </button>
+                    <h2 class="page-title" id="top-page-title">Assigned Tasks</h2>
+                </div>
+                <div class="navbar-right">
+                    <a href="/" class="nav-link-item style-home-btn" style="margin-right: 12px; text-decoration: none; color: var(--text-muted); font-size: 0.875rem;"><i data-feather="home" style="width:16px; height:16px; vertical-align:middle; margin-right:4px;"></i> Home</a>
+                    <button class="icon-btn theme-toggle" title="Toggle Theme"><i data-feather="sun"></i></button>
+                </div>
+            </header>
+
+            <div class="content-area">
+
+                <!-- === Staff Dashboard === -->
+                <section id="dash-staff" class="sub-view active">
+                    <div class="dashboard-header mb-4">
+                        <div>
+                            <h3 class="greeting">Your Assigned Tasks</h3>
+                            <p class="subtitle mt-1">Update the status of issues assigned to you.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="table-responsive">
+                            <table class="data-table staff-table">
+                                <thead>
+                                    <tr>
+                                        <th>Task Details</th>
+                                        <th>Location</th>
+                                        <th style="width: 200px;">Update Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="staff-complaints-body">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                            <div id="staff-empty-state" class="empty-state hidden">
+                                <div class="empty-icon"><i data-feather="coffee"></i></div>
+                                <h4>No tasks today</h4>
+                                <p>You have no pending assignments right now.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

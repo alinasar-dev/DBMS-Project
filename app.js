@@ -29,27 +29,61 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function checkSession() {
+    const page = document.body.getAttribute('data-page');
     const token = localStorage.getItem('cmms_token');
-    if (!token) return;
+    
+    if (!token) {
+        if (['student', 'staff', 'admin'].includes(page)) {
+            window.location.href = '/login';
+        }
+        return;
+    }
 
     const data = await apiCall(`${API}/auth/me`);
     if (data.success && data.user) {
         currentUser = data.user;
-        document.getElementById('nav-name').innerText = currentUser.name;
-        document.getElementById('nav-role').innerText = currentUser.role;
-        document.getElementById('nav-avatar').innerText = currentUser.name.charAt(0);
+
+        if (page === 'home') {
+            const authBtn = document.getElementById('landing-auth-btn');
+            if (authBtn) {
+                authBtn.innerHTML = `Go to Dashboard <i data-feather="arrow-right" style="width:16px;height:16px;vertical-align:middle;margin-left:4px;"></i>`;
+                authBtn.href = `/${currentUser.role}`;
+                feather.replace();
+            }
+            return;
+        }
+
+        if (page === 'login') {
+            window.location.href = `/${currentUser.role}`;
+            return;
+        }
+
+        if (page && ['student', 'staff', 'admin'].includes(page) && page !== currentUser.role) {
+            window.location.href = `/${currentUser.role}`;
+            return;
+        }
+
+        const navName = document.getElementById('nav-name');
+        if (navName) navName.innerText = currentUser.name;
+        const navRole = document.getElementById('nav-role');
+        if (navRole) navRole.innerText = currentUser.role;
+        const navAvatar = document.getElementById('nav-avatar');
+        if (navAvatar) navAvatar.innerText = currentUser.name.charAt(0);
 
         const staffData = await apiCall(`${API}/staff`);
         if (Array.isArray(staffData)) staffCache = staffData;
 
         generateSidebarNav(currentUser.role);
-        showMainView('app');
-        if (currentUser.role === 'student') { renderStudentDash(); showSubView('student', 'My Dashboard'); }
-        else if (currentUser.role === 'admin') { renderAdminDash(); showSubView('admin', 'Admin Panel'); }
-        else if (currentUser.role === 'staff') { renderStaffDash(); showSubView('staff', 'Assigned Tasks'); }
+        
+        if (currentUser.role === 'student' && page === 'student') { renderStudentDash(); showSubView('student', 'My Dashboard'); }
+        else if (currentUser.role === 'admin' && page === 'admin') { renderAdminDash(); showSubView('admin', 'Admin Panel'); }
+        else if (currentUser.role === 'staff' && page === 'staff') { renderStaffDash(); showSubView('staff', 'Assigned Tasks'); }
     } else {
         localStorage.removeItem('cmms_token');
         localStorage.removeItem('cmms_user');
+        if (['student', 'staff', 'admin'].includes(page)) {
+            window.location.href = '/login';
+        }
     }
 }
 
@@ -229,7 +263,7 @@ document.querySelectorAll('.login-tab').forEach(btn => {
     });
 });
 
-document.getElementById('login-form').addEventListener('submit', async (e) => {
+document.getElementById('login-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const identifier = document.getElementById('login-identifier').value;
     const password = document.getElementById('login-password').value;
@@ -251,21 +285,11 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     currentUser = data.user;
     localStorage.setItem('cmms_token', data.token);
     localStorage.setItem('cmms_user', JSON.stringify(data.user));
-    document.getElementById('nav-name').innerText = currentUser.name;
-    document.getElementById('nav-role').innerText = currentUser.role;
-    document.getElementById('nav-avatar').innerText = currentUser.name.charAt(0);
 
-    // Cache staff list for dropdowns
-    const staffData = await apiCall(`${API}/staff`);
-    staffCache = Array.isArray(staffData) ? staffData : [];
-
-    generateSidebarNav(role);
-    showMainView('app');
-    showToast('success', 'Logged In', `Welcome back, ${currentUser.name}!`);
-
-    if (role === 'student') { renderStudentDash(); showSubView('student', 'My Dashboard'); }
-    else if (role === 'admin') { renderAdminDash(); showSubView('admin', 'Admin Panel'); }
-    else if (role === 'staff') { renderStaffDash(); showSubView('staff', 'Assigned Tasks'); }
+    showToast('success', 'Logged In', `Welcome back, ${currentUser.name}! Redirecting...`);
+    setTimeout(() => {
+        window.location.href = `/${role}`;
+    }, 400);
 });
 
 // ==========================================================
@@ -334,30 +358,16 @@ document.getElementById('register-form')?.addEventListener('submit', async (e) =
     document.getElementById('login-panel-container').classList.remove('active');
 });
 
-document.getElementById('logout-btn').addEventListener('click', () => {
+document.getElementById('logout-btn')?.addEventListener('click', () => {
     localStorage.removeItem('cmms_token');
     localStorage.removeItem('cmms_user');
     currentUser = null;
     staffCache = [];
-    document.getElementById('login-form').reset();
-    // Reset login tab to student
-    document.querySelectorAll('.login-tab').forEach(b => b.classList.remove('active'));
-    document.querySelector('.login-tab[data-role="student"]').classList.add('active');
-    currentLoginRole = 'student';
-    // Show the Sign Up button on overlay (for student role)
-    const registerOverlayBtn = document.getElementById('register');
-    if (registerOverlayBtn) registerOverlayBtn.classList.remove('hidden');
-    // Reset sliding panel to sign-in side
-    document.getElementById('login-panel-container')?.classList.remove('active');
-    const inputEl = document.getElementById('login-identifier');
-    inputEl.type = 'email';
-    inputEl.placeholder = 'name@campus.edu';
-    document.getElementById('login-identifier-label').innerText = 'Email';
-    showMainView('login');
+    window.location.href = '/login';
 });
 
-document.getElementById('mobile-menu-toggle').addEventListener('click', () => {
-    document.querySelector('.sidebar').classList.toggle('mobile-open');
+document.getElementById('mobile-menu-toggle')?.addEventListener('click', () => {
+    document.querySelector('.sidebar')?.classList.toggle('mobile-open');
 });
 
 // ==========================================================
@@ -400,17 +410,17 @@ async function renderStudentDash() {
     }
 }
 
-document.getElementById('btn-goto-submit').addEventListener('click', () => {
-    document.getElementById('submit-complaint-form').reset();
+document.getElementById('btn-goto-submit')?.addEventListener('click', () => {
+    document.getElementById('submit-complaint-form')?.reset();
     showSubView('submit', 'Report Issue');
 });
 
-document.getElementById('btn-back-dash').addEventListener('click', () => {
+document.getElementById('btn-back-dash')?.addEventListener('click', () => {
     renderStudentDash();
     showSubView('student', 'My Dashboard');
 });
 
-document.getElementById('submit-complaint-form').addEventListener('submit', async (e) => {
+document.getElementById('submit-complaint-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('submit-btn');
     btn.classList.add('btn-loading');
@@ -591,10 +601,10 @@ function openAssignModal(id) {
 }
 
 document.querySelectorAll('.close-modal-btn').forEach(btn => {
-    btn.addEventListener('click', () => document.getElementById('assign-modal').classList.remove('active'));
+    btn.addEventListener('click', () => document.getElementById('assign-modal')?.classList.remove('active'));
 });
 
-document.getElementById('btn-confirm-assign').addEventListener('click', async (e) => {
+document.getElementById('btn-confirm-assign')?.addEventListener('click', async (e) => {
     const staffIdStr = document.getElementById('assign-staff-select').value;
     if (!staffIdStr) { showToast('error', 'Error', 'Please select a staff member.'); return; }
 
@@ -669,12 +679,12 @@ async function deleteStaffMember(id) {
     }
 }
 
-document.getElementById('btn-back-dash-admin').addEventListener('click', () => {
+document.getElementById('btn-back-dash-admin')?.addEventListener('click', () => {
     renderAdminDash();
     showSubView('admin', 'Admin Panel');
 });
 
-document.getElementById('add-staff-form').addEventListener('submit', async (e) => {
+document.getElementById('add-staff-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('add-staff-btn');
     btn.classList.add('btn-loading');

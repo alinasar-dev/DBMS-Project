@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "cleanUrls": true,
   "builds": [
     {
       "src": "server.js",
@@ -7,6 +8,22 @@
     },
     {
       "src": "index.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "login.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "student.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "staff.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "admin.html",
       "use": "@vercel/static"
     },
     {
@@ -30,6 +47,22 @@
     {
       "src": "/app.js",
       "dest": "app.js"
+    },
+    {
+      "src": "/login",
+      "dest": "login.html"
+    },
+    {
+      "src": "/student",
+      "dest": "student.html"
+    },
+    {
+      "src": "/staff",
+      "dest": "staff.html"
+    },
+    {
+      "src": "/admin",
+      "dest": "admin.html"
     },
     {
       "src": "/(.*)",

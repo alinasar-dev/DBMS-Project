@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal | CMMS</title>
+    <!-- Modern Sans-Serif Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body data-page="student">
+
+    <!-- ==================== VIEW: APP SHELL ==================== -->
+    <div id="app-shell" class="view active">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="brand" style="text-decoration: none; color: inherit;">
+                    <i data-feather="box" class="brand-icon"></i>
+                    <span>CMMS</span>
+                </a>
+            </div>
+
+            <div class="sidebar-user">
+                <div class="avatar" id="nav-avatar">U</div>
+                <div class="user-info">
+                    <span id="nav-name" class="name">Loading...</span>
+                    <span id="nav-role" class="role">student</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav" id="sidebar-nav-container">
+                <!-- Links dynamically populated by JS based on role -->
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="nav-item btn-ghost text-danger" id="logout-btn">
+                    <i data-feather="log-out"></i>
+                    Log out
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-workspace">
+            <header class="top-navbar">
+                <div class="navbar-left">
+                    <button class="icon-btn mobile-menu-toggle" id="mobile-menu-toggle">
+                        <i data-feather="menu"></i>
+                    </button>
+                    <h2 class="page-title" id="top-page-title">My Dashboard</h2>
+                </div>
+                <div class="navbar-right">
+                    <a href="/" class="nav-link-item style-home-btn" style="margin-right: 12px; text-decoration: none; color: var(--text-muted); font-size: 0.875rem;"><i data-feather="home" style="width:16px; height:16px; vertical-align:middle; margin-right:4px;"></i> Home</a>
+                    <button class="icon-btn theme-toggle" title="Toggle Theme"><i data-feather="sun"></i></button>
+                </div>
+            </header>
+
+            <div class="content-area">
+
+                <!-- === Student Dashboard === -->
+                <section id="dash-student" class="sub-view active">
+                    <div class="dashboard-header mb-4">
+                        <div>
+                            <h3 class="greeting">Welcome back, <span id="student-greeting-name"></span> 👋</h3>
+                            <p class="subtitle mt-1">Here is an overview of your reported issues.</p>
+                        </div>
+                        <button class="btn btn-primary btn-icon" id="btn-goto-submit">
+                            <i data-feather="plus"></i> New Complaint
+                        </button>
+                    </div>
+
+                    <div class="stats-grid mb-6">
+                        <div class="stat-card card">
+                            <div class="stat-icon bg-gray"><i data-feather="file-text"></i></div>
+                            <div class="stat-content">
+                                <span class="stat-label">Total Reported</span>
+                                <span class="stat-value" id="stu-stat-total">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-card card">
+                            <div class="stat-icon bg-warning"><i data-feather="clock"></i></div>
+                            <div class="stat-content">
+                                <span class="stat-label">Pending / In Progress</span>
+                                <span class="stat-value" id="stu-stat-pending">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-card card">
+                            <div class="stat-icon bg-success"><i data-feather="check-circle"></i></div>
+                            <div class="stat-content">
+                                <span class="stat-label">Resolved</span>
+                                <span class="stat-value" id="stu-stat-resolved">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Recent Complaints</h4>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ticket ID</th>
+                                        <th>Category</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="student-complaints-body">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                            <div id="student-empty-state" class="empty-state hidden">
+                                <div class="empty-icon"><i data-feather="inbox"></i></div>
+                                <h4>No complaints found</h4>
+                                <p>You haven't reported any issues yet.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- === Submit Complaint === -->
+                <section id="dash-submit" class="sub-view hidden">
+                    <button class="btn btn-link mb-4" id="btn-back-dash">
+                        <i data-feather="arrow-left"></i> Back to Dashboard
+                    </button>
+
+                    <div class="card form-card">
+                        <div class="card-header">
+                            <h4 class="card-title">Submit a New Complaint</h4>
+                            <p class="subtitle">Please provide detailed information to help us route your request quickly.</p>
+                        </div>
+                        <div class="card-body">
+                            <form id="submit-complaint-form">
+                                <div class="form-row">
+                                    <div class="form-group flex-1">
+                                        <label for="category">Category</label>
+                                        <div class="select-wrapper">
+                                            <select id="category" required>
+                                                <option value="" disabled selected>Select Category</option>
+                                                <option value="Electrical">Electrical</option>
+                                                <option value="Plumbing">Plumbing</option>
+                                                <option value="WiFi">WiFi/Network</option>
+                                                <option value="Infrastructure">Infrastructure (Furniture)</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                            <i data-feather="chevron-down" class="select-icon"></i>
+                                        </div>
+                                    </div>
+                                    <div class="form-group flex-1">
+                                        <label for="location">Location</label>
+                                        <input type="text" id="location" required placeholder="e.g., Block A, Room 204">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="description">Detailed Description</label>
+                                    <textarea id="description" rows="5" required
+                                        placeholder="Describe what exactly is broken or needs attention..."></textarea>
+                                </div>
+
+                                <div class="form-actions mt-4 text-right">
+                                    <button type="submit" class="btn btn-primary" id="submit-btn">
+                                        <span class="btn-text">Submit Request</span>
+                                        <div class="spinner hidden"></div>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
