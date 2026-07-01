@@ -23,7 +23,35 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         document.getElementById('login-footer')?.scrollIntoView({ behavior: 'smooth' });
     });
+
+    // Check existing login session
+    checkSession();
 });
+
+async function checkSession() {
+    const token = localStorage.getItem('cmms_token');
+    if (!token) return;
+
+    const data = await apiCall(`${API}/auth/me`);
+    if (data.success && data.user) {
+        currentUser = data.user;
+        document.getElementById('nav-name').innerText = currentUser.name;
+        document.getElementById('nav-role').innerText = currentUser.role;
+        document.getElementById('nav-avatar').innerText = currentUser.name.charAt(0);
+
+        const staffData = await apiCall(`${API}/staff`);
+        if (Array.isArray(staffData)) staffCache = staffData;
+
+        generateSidebarNav(currentUser.role);
+        showMainView('app');
+        if (currentUser.role === 'student') { renderStudentDash(); showSubView('student', 'My Dashboard'); }
+        else if (currentUser.role === 'admin') { renderAdminDash(); showSubView('admin', 'Admin Panel'); }
+        else if (currentUser.role === 'staff') { renderStaffDash(); showSubView('staff', 'Assigned Tasks'); }
+    } else {
+        localStorage.removeItem('cmms_token');
+        localStorage.removeItem('cmms_user');
+    }
+}
 
 function initThemeToggle() {
     const toggles = document.querySelectorAll('.theme-toggle');
@@ -72,9 +100,13 @@ function getBadgeHtml(status) {
 
 async function apiCall(url, options = {}) {
     try {
+        const token = localStorage.getItem('cmms_token');
+        const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
         const res = await fetch(url, {
-            headers: { 'Content-Type': 'application/json' },
             ...options,
+            headers,
             body: options.body ? JSON.stringify(options.body) : undefined
         });
         return await res.json();
@@ -217,6 +249,8 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     }
 
     currentUser = data.user;
+    localStorage.setItem('cmms_token', data.token);
+    localStorage.setItem('cmms_user', JSON.stringify(data.user));
     document.getElementById('nav-name').innerText = currentUser.name;
     document.getElementById('nav-role').innerText = currentUser.role;
     document.getElementById('nav-avatar').innerText = currentUser.name.charAt(0);
@@ -301,6 +335,8 @@ document.getElementById('register-form')?.addEventListener('submit', async (e) =
 });
 
 document.getElementById('logout-btn').addEventListener('click', () => {
+    localStorage.removeItem('cmms_token');
+    localStorage.removeItem('cmms_user');
     currentUser = null;
     staffCache = [];
     document.getElementById('login-form').reset();
