@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CMMS Admin Portal — Monitor complaints, assign maintenance staff, and manage campus facility requests.">
     <title>Admin Portal | CMMS</title>
     <!-- Modern Sans-Serif Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,6 +14,14 @@
 </head>
 
 <body data-page="admin">
+    <!-- Page Loader / Transition Screen -->
+    <div id="page-loader" class="page-loader">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <span class="loader-text" id="loader-text">Loading Admin Panel...</span>
+        </div>
+    </div>
+
 
     <!-- ==================== VIEW: APP SHELL ==================== -->
     <div id="app-shell" class="view active">
@@ -55,7 +64,7 @@
                     <h2 class="page-title" id="top-page-title">Admin Panel</h2>
                 </div>
                 <div class="navbar-right">
-                    <a href="/" class="nav-link-item style-home-btn" style="margin-right: 12px; text-decoration: none; color: var(--text-muted); font-size: 0.875rem;"><i data-feather="home" style="width:16px; height:16px; vertical-align:middle; margin-right:4px;"></i> Home</a>
+                    <a href="/" style="margin-right: 12px; text-decoration: none; color: var(--clr-text-muted); font-size: 0.875rem; display:inline-flex; align-items:center; gap:4px;"><i data-feather="home" style="width:16px; height:16px;"></i> Home</a>
                     <button class="icon-btn theme-toggle" title="Toggle Theme"><i data-feather="sun"></i></button>
                 </div>
             </header>
@@ -90,7 +99,10 @@
 
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">All Complaints Queue</h4>
+                            <div class="card-header-row">
+                                <h4 class="card-title">All Complaints Queue</h4>
+                                <input type="text" id="admin-search" class="search-input" placeholder="Search by ID, category, location...">
+                            </div>
                         </div>
                         <div class="table-responsive">
                             <table class="data-table">
@@ -235,6 +247,42 @@
                                 <div class="empty-icon"><i data-feather="users"></i></div>
                                 <h4>No staff registered</h4>
                                 <p>Staff members that you manually register will display here.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- === Staff Performance === -->
+                <section id="dash-admin-performance" class="sub-view hidden">
+                    <div class="dashboard-header mb-4">
+                        <div>
+                            <h3 class="greeting">Staff Performance</h3>
+                            <p class="subtitle mt-1">Overview of task completion by maintenance staff.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Performance Overview</h4>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Staff Member</th>
+                                        <th>Department</th>
+                                        <th>Tasks Assigned</th>
+                                        <th>Tasks Resolved</th>
+                                        <th class="text-right">Completion Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="staff-performance-body">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                            <div id="staff-performance-empty-state" class="empty-state hidden">
+                                <div class="empty-icon"><i data-feather="users"></i></div>
+                                <h4>No staff registered</h4>
+                                <p>Register staff members to view their performance metrics.</p>
                             </div>
                         </div>
                     </div>

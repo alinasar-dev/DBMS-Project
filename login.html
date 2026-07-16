@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Log in or sign up to access the CMMS campus maintenance portal. Students, staff, and admin access.">
     <title>Login / Sign Up | CMMS</title>
     <!-- Modern Sans-Serif Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -14,6 +15,14 @@
 </head>
 
 <body data-page="login">
+    <!-- Page Loader / Transition Screen -->
+    <div id="page-loader" class="page-loader">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <span class="loader-text" id="loader-text">Loading Portal...</span>
+        </div>
+    </div>
+
 
     <!-- ==================== VIEW: LOGIN ==================== -->
     <div id="login-view" class="view active">
@@ -47,7 +56,7 @@
                         </div>
                         <span class="form-divider-text">or use your email for registration</span>
                         <div class="sliding-form-group">
-                            <input type="text" id="reg-student-id" placeholder="Student ID (e.g. 10425)" required>
+                            <input type="text" id="reg-student-id" placeholder="Student ID" required>
                         </div>
                         <div class="sliding-form-group">
                             <input type="text" id="reg-name" placeholder="Full Name" required>

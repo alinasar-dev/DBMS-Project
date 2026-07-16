@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CMMS NITC \u2014 Intelligent campus maintenance management for students, staff, and administrators. Report, track, and resolve facility issues.">
     <title>CMMS | Intelligent Campus Maintenance Management</title>
     <!-- Modern Sans-Serif Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,6 +15,14 @@
 </head>
 
 <body data-page="home">
+    <!-- Page Loader / Transition Screen -->
+    <div id="page-loader" class="page-loader">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <span class="loader-text" id="loader-text">Loading CMMS...</span>
+        </div>
+    </div>
+
 
     <!-- ==================== LANDING HEADER / NAVBAR ==================== -->
     <header class="landing-navbar">
@@ -38,11 +47,7 @@
 
     <!-- ==================== HERO SECTION ==================== -->
     <section class="landing-hero">
-        <div class="hero-bg-glow glow-1"></div>
-        <div class="hero-bg-glow glow-2"></div>
-        
         <div class="landing-hero-content">
-            <span class="badge hero-badge">🚀 Modern Infrastructure Management</span>
             <h1 class="hero-title">Streamlined Campus Maintenance, <span class="gradient-text">Intelligent Resolution</span></h1>
             <p class="hero-subtitle">
                 An advanced, automated platform connecting students, maintenance personnel, and administrators for rapid detection, routing, and resolution of campus facility issues.
@@ -52,37 +57,11 @@
                 <a href="#workflow" class="btn btn-outline btn-lg">Explore Workflow</a>
             </div>
         </div>
-
-        <!-- Live Statistics Banner -->
-        <div class="landing-stats-grid">
-            <div class="stat-box card">
-                <div class="stat-box-icon"><i data-feather="check-circle" class="text-success"></i></div>
-                <div class="stat-box-info">
-                    <h3>99.4%</h3>
-                    <p>Resolution Success Rate</p>
-                </div>
-            </div>
-            <div class="stat-box card">
-                <div class="stat-box-icon"><i data-feather="zap" class="text-warning"></i></div>
-                <div class="stat-box-info">
-                    <h3>&lt; 4 Hrs</h3>
-                    <p>Average Dispatch & Fix Time</p>
-                </div>
-            </div>
-            <div class="stat-box card">
-                <div class="stat-box-icon"><i data-feather="shield" class="text-primary"></i></div>
-                <div class="stat-box-info">
-                    <h3>24/7</h3>
-                    <p>Automated Ticket Routing</p>
-                </div>
-            </div>
-        </div>
     </section>
 
     <!-- ==================== FEATURES SECTION ==================== -->
     <section id="features" class="landing-section">
         <div class="section-header text-center">
-            <span class="badge">Platform Highlights</span>
             <h2>Why Campuses Trust CMMS</h2>
             <p class="section-desc">Designed with speed, transparency, and role isolation at its core.</p>
         </div>
@@ -109,7 +88,6 @@
     <!-- ==================== WORKFLOW SECTION ==================== -->
     <section id="workflow" class="landing-section pattern-bg">
         <div class="section-header text-center">
-            <span class="badge">Simple Process</span>
             <h2>How Our System Works</h2>
             <p class="section-desc">Three effortless steps to maintain world-class campus facilities.</p>
         </div>
@@ -138,7 +116,6 @@
     <!-- ==================== ROLE PORTALS SECTION ==================== -->
     <section id="portals" class="landing-section">
         <div class="section-header text-center">
-            <span class="badge">Dedicated Portals</span>
             <h2>Choose Your Access Portal</h2>
             <p class="section-desc">Sign in to your customized workspace built specifically for your campus responsibilities.</p>
         </div>

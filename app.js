@@ -1,6 +1,6 @@
 // ==========================================================
 // CMMS - Campus Maintenance Management System
-// Full-Stack Mode: All data from MySQL via Node.js REST API
+// Full-Stack Mode: PostgreSQL (Supabase) via Node.js REST API
 // ==========================================================
 
 const API = '/api';
@@ -24,9 +24,39 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('login-footer')?.scrollIntoView({ behavior: 'smooth' });
     });
 
+    // Intercept navigation links for smooth page transition
+    document.querySelectorAll('a[href^="/"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const target = link.getAttribute('href');
+            if (target && target !== '#' && target !== window.location.pathname) {
+                e.preventDefault();
+                showPageLoader('Navigating...');
+                setTimeout(() => {
+                    window.location.href = target;
+                }, 180);
+            }
+        });
+    });
+
     // Check existing login session
     checkSession();
 });
+
+function showPageLoader(msg = 'Loading CMMS...') {
+    const loader = document.getElementById('page-loader');
+    const text = document.getElementById('loader-text');
+    if (text && msg) text.innerText = msg;
+    if (loader) loader.classList.remove('fade-out');
+}
+
+function hidePageLoader() {
+    const loader = document.getElementById('page-loader');
+    if (loader) {
+        setTimeout(() => {
+            loader.classList.add('fade-out');
+        }, 150);
+    }
+}
 
 async function checkSession() {
     const page = document.body.getAttribute('data-page');
@@ -35,7 +65,9 @@ async function checkSession() {
     if (!token) {
         if (['student', 'staff', 'admin'].includes(page)) {
             window.location.href = '/login';
+            return;
         }
+        hidePageLoader();
         return;
     }
 
@@ -50,15 +82,18 @@ async function checkSession() {
                 authBtn.href = `/${currentUser.role}`;
                 feather.replace();
             }
+            hidePageLoader();
             return;
         }
 
         if (page === 'login') {
+            showPageLoader('Redirecting to Dashboard...');
             window.location.href = `/${currentUser.role}`;
             return;
         }
 
         if (page && ['student', 'staff', 'admin'].includes(page) && page !== currentUser.role) {
+            showPageLoader('Redirecting to your Dashboard...');
             window.location.href = `/${currentUser.role}`;
             return;
         }
@@ -66,7 +101,7 @@ async function checkSession() {
         const navName = document.getElementById('nav-name');
         if (navName) navName.innerText = currentUser.name;
         const navRole = document.getElementById('nav-role');
-        if (navRole) navRole.innerText = currentUser.role;
+        if (navRole) navRole.innerText = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
         const navAvatar = document.getElementById('nav-avatar');
         if (navAvatar) navAvatar.innerText = currentUser.name.charAt(0);
 
@@ -75,15 +110,19 @@ async function checkSession() {
 
         generateSidebarNav(currentUser.role);
         
-        if (currentUser.role === 'student' && page === 'student') { renderStudentDash(); showSubView('student', 'My Dashboard'); }
-        else if (currentUser.role === 'admin' && page === 'admin') { renderAdminDash(); showSubView('admin', 'Admin Panel'); }
-        else if (currentUser.role === 'staff' && page === 'staff') { renderStaffDash(); showSubView('staff', 'Assigned Tasks'); }
+        if (currentUser.role === 'student' && page === 'student') { await renderStudentDash(); showSubView('student', 'My Dashboard'); }
+        else if (currentUser.role === 'admin' && page === 'admin') { await renderAdminDash(); showSubView('admin', 'Admin Panel'); }
+        else if (currentUser.role === 'staff' && page === 'staff') { await renderStaffDash(); showSubView('staff', 'Assigned Tasks'); }
+
+        hidePageLoader();
     } else {
         localStorage.removeItem('cmms_token');
         localStorage.removeItem('cmms_user');
         if (['student', 'staff', 'admin'].includes(page)) {
             window.location.href = '/login';
+            return;
         }
+        hidePageLoader();
     }
 }
 
@@ -128,10 +167,6 @@ function showToast(type, title, message) {
     setTimeout(() => toast.remove(), 4000);
 }
 
-function generateId() {
-    // Fallback random ID — only used if student omits their ID
-    return Math.floor(Math.random() * 90000 + 10000);
-}
 
 function getBadgeHtml(status) {
     if (status === 'Pending') return `<span class="status-badge badge-pending">Pending</span>`;
@@ -161,8 +196,6 @@ async function apiCall(url, options = {}) {
 // ==========================================================
 // NAVIGATION & ROUTING
 // ==========================================================
-// NAVIGATION & ROUTING
-// ==========================================================
 function getViews() {
     return {
         login: document.getElementById('login-view'),
@@ -177,20 +210,24 @@ function getSubViews() {
         admin: document.getElementById('dash-admin'),
         adminResolved: document.getElementById('dash-admin-resolved'),
         adminAddStaff: document.getElementById('dash-admin-add-staff'),
+        staffPerformance: document.getElementById('dash-admin-performance'),
         staff: document.getElementById('dash-staff')
     };
 }
 
-function showMainView(viewName) {
-    const vList = getViews();
-    Object.values(vList).forEach(v => v?.classList.add('hidden'));
-    if (vList[viewName]) vList[viewName].classList.remove('hidden');
-}
-
 function showSubView(viewName, title) {
     const sList = getSubViews();
-    Object.values(sList).forEach(v => v?.classList.add('hidden'));
-    if (sList[viewName]) sList[viewName].classList.remove('hidden');
+    Object.values(sList).forEach(v => {
+        if (v) {
+            v.classList.add('hidden');
+            v.classList.remove('active-subview');
+        }
+    });
+    if (sList[viewName]) {
+        sList[viewName].classList.remove('hidden');
+        void sList[viewName].offsetWidth;
+        sList[viewName].classList.add('active-subview');
+    }
     const titleEl = document.getElementById('top-page-title');
     if (titleEl && title) titleEl.innerText = title;
     document.querySelectorAll('.nav-item').forEach(el => {
@@ -215,7 +252,8 @@ function generateSidebarNav(role) {
         links = [
             { target: 'admin', icon: 'layout', label: 'Admin Panel' },
             { target: 'adminResolved', icon: 'archive', label: 'Resolved Tickets' },
-            { target: 'adminAddStaff', icon: 'user-plus', label: 'Register Staff' }
+            { target: 'adminAddStaff', icon: 'user-plus', label: 'Register Staff' },
+            { target: 'staffPerformance', icon: 'bar-chart-2', label: 'Staff Performance' }
         ];
     } else if (role === 'staff') {
         links = [
@@ -227,18 +265,20 @@ function generateSidebarNav(role) {
         const btn = document.createElement('button');
         btn.className = 'nav-item';
         btn.dataset.target = l.target;
-        btn.innerHTML = `<i data-feather="${l.icon}"></i> ${l.label}`;
+        btn.innerHTML = `<i data-feather="${l.icon}"></i> <span>${l.label}</span>`;
         btn.addEventListener('click', () => {
             if (l.target === 'student') renderStudentDash();
             if (l.target === 'admin') renderAdminDash();
             if (l.target === 'adminResolved') renderAdminResolvedDash();
             if (l.target === 'adminAddStaff') renderAdminStaffList();
+            if (l.target === 'staffPerformance') renderStaffPerformance();
             if (l.target === 'staff') renderStaffDash();
             showSubView(l.target, l.label);
         });
         navContainer.appendChild(btn);
     });
     feather.replace();
+    updateSidebarBadges(role);
 }
 
 // ==========================================================
@@ -255,26 +295,31 @@ document.querySelectorAll('.login-tab').forEach(btn => {
         const inputEl = document.getElementById('login-identifier');
         const labelEl = document.getElementById('login-identifier-label');
 
+        const rightPanelH1 = document.querySelector('#toggle-right-panel h1');
+        const rightPanelP = document.querySelector('#toggle-right-panel p');
+        const registerOverlayBtn = document.getElementById('register');
+
         if (currentLoginRole === 'student') {
             labelEl.innerText = 'Email';
             inputEl.placeholder = 'name@campus.edu';
             inputEl.type = 'email';
-            // Show Sign Up button on overlay for students
-            const registerOverlayBtn = document.getElementById('register');
+            if (rightPanelH1) rightPanelH1.innerText = 'Hello, Scholar!';
+            if (rightPanelP) rightPanelP.innerText = 'New student? Register to start reporting campus issues';
             if (registerOverlayBtn) registerOverlayBtn.classList.remove('hidden');
         } else if (currentLoginRole === 'staff') {
             labelEl.innerText = 'Email';
             inputEl.placeholder = 'staff@campus.edu';
             inputEl.type = 'email';
-            // Hide Sign Up for non-students and reset to sign-in panel
-            const registerOverlayBtn = document.getElementById('register');
+            if (rightPanelH1) rightPanelH1.innerText = 'Hello, Staff!';
+            if (rightPanelP) rightPanelP.innerText = 'Maintenance personnel? Sign in to view and resolve assigned tasks';
             if (registerOverlayBtn) registerOverlayBtn.classList.add('hidden');
             document.getElementById('login-panel-container')?.classList.remove('active');
         } else {
             labelEl.innerText = 'Email';
             inputEl.placeholder = 'admin@campus.edu';
             inputEl.type = 'email';
-            const registerOverlayBtn = document.getElementById('register');
+            if (rightPanelH1) rightPanelH1.innerText = 'Hello, Admin!';
+            if (rightPanelP) rightPanelP.innerText = 'Campus administrator? Sign in to oversee operations and manage tickets';
             if (registerOverlayBtn) registerOverlayBtn.classList.add('hidden');
             document.getElementById('login-panel-container')?.classList.remove('active');
         }
@@ -306,6 +351,7 @@ document.getElementById('login-form')?.addEventListener('submit', async (e) => {
 
     showToast('success', 'Logged In', `Welcome back, ${currentUser.name}! Redirecting...`);
     setTimeout(() => {
+        showPageLoader(`Welcome back, ${currentUser.name}...`);
         window.location.href = `/${role}`;
     }, 400);
 });
@@ -328,17 +374,6 @@ if (loginToggleBtn) {
         panelContainer.classList.remove('active');
     });
 }
-
-// Mobile fallback toggles
-document.getElementById('mobile-toggle-register')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    panelContainer.classList.add('active');
-});
-
-document.getElementById('mobile-toggle-login')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    panelContainer.classList.remove('active');
-});
 
 document.getElementById('register-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -377,11 +412,14 @@ document.getElementById('register-form')?.addEventListener('submit', async (e) =
 });
 
 document.getElementById('logout-btn')?.addEventListener('click', () => {
+    showPageLoader('Logging out...');
     localStorage.removeItem('cmms_token');
     localStorage.removeItem('cmms_user');
     currentUser = null;
     staffCache = [];
-    window.location.href = '/login';
+    setTimeout(() => {
+        window.location.href = '/login';
+    }, 200);
 });
 
 document.getElementById('mobile-menu-toggle')?.addEventListener('click', () => {
@@ -409,28 +447,44 @@ async function renderStudentDash() {
     const statResolved = document.getElementById('stu-stat-resolved');
     if (statResolved) statResolved.innerText = myComplaints.filter(c => c.status === 'Resolved').length;
 
-    tbody.innerHTML = '';
+    const renderTable = (list) => {
+        tbody.innerHTML = '';
+        if (list.length === 0) {
+            tbody.parentElement.classList.add('hidden');
+            emptyState.classList.remove('hidden');
+        } else {
+            tbody.parentElement.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            list.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div style="margin-bottom:0.2rem"><strong>TKT-${c.complaint_id}</strong></div>
+                        <p class="subtitle text-xs" style="white-space:normal;">${c.description}</p>
+                    </td>
+                    <td>${c.category}</td>
+                    <td>${c.location}</td>
+                    <td>${getBadgeHtml(c.status)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    };
 
-    if (myComplaints.length === 0) {
-        tbody.parentElement.classList.add('hidden');
-        emptyState.classList.remove('hidden');
-    } else {
-        tbody.parentElement.classList.remove('hidden');
-        emptyState.classList.add('hidden');
-        myComplaints.forEach(c => {
-            const tr = document.createElement('tr');
-            const dateStr = c.date_submitted ? new Date(c.date_submitted).toLocaleDateString() : '';
-            tr.innerHTML = `
-                <td>
-                    <div style="margin-bottom:0.2rem"><strong>TKT-${c.complaint_id}</strong></div>
-                    <p class="subtitle text-xs" style="white-space:normal;">${c.description}</p>
-                </td>
-                <td>${c.category}</td>
-                <td>${c.location}</td>
-                <td>${getBadgeHtml(c.status)}</td>
-            `;
-            tbody.appendChild(tr);
-        });
+    renderTable(myComplaints);
+
+    const searchInput = document.getElementById('student-search');
+    if (searchInput) {
+        searchInput.oninput = (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const filtered = myComplaints.filter(c =>
+                `tkt-${c.complaint_id}`.includes(query) ||
+                (c.category && c.category.toLowerCase().includes(query)) ||
+                (c.location && c.location.toLowerCase().includes(query)) ||
+                (c.description && c.description.toLowerCase().includes(query))
+            );
+            renderTable(filtered);
+        };
     }
 }
 
@@ -497,56 +551,77 @@ async function renderAdminDash() {
 
     const activeComplaints = allComplaints.filter(c => c.status !== 'Resolved');
 
-    if (activeComplaints.length === 0) {
-        tbody.parentElement.classList.add('hidden');
-        emptyState.classList.remove('hidden');
-    } else {
-        tbody.parentElement.classList.remove('hidden');
-        emptyState.classList.add('hidden');
+    const renderAdminRows = (list) => {
+        tbody.innerHTML = '';
+        if (list.length === 0) {
+            tbody.parentElement.classList.add('hidden');
+            emptyState.classList.remove('hidden');
+        } else {
+            tbody.parentElement.classList.remove('hidden');
+            emptyState.classList.add('hidden');
 
-        activeComplaints.forEach(c => {
-            const tr = document.createElement('tr');
-            const isAssigned = !!c.assigned_staff_id;
-            const assignedName = c.staff_name
-                ? `<span class="text-xs">${c.staff_name}</span>`
-                : `<span class="text-xs text-warning">Unassigned</span>`;
-            const dateStr = c.date_submitted ? new Date(c.date_submitted).toLocaleDateString() : '';
+            list.forEach(c => {
+                const tr = document.createElement('tr');
+                const isAssigned = !!c.assigned_staff_id;
+                const assignedName = c.staff_name
+                    ? `<span class="text-xs">${c.staff_name}</span>`
+                    : `<span class="text-xs text-warning">Unassigned</span>`;
+                const dateStr = c.date_submitted ? new Date(c.date_submitted).toLocaleDateString() : '';
 
-            tr.innerHTML = `
-                <td>
-                    <div style="margin-bottom:0.2rem"><strong>TKT-${c.complaint_id}</strong> <span class="text-xs subtitle">${dateStr}</span></div>
-                    <p class="subtitle text-xs" style="white-space:normal;">${c.description}</p>
-                </td>
-                <td>${c.student_name || 'Unknown'}</td>
-                <td>${c.category}</td>
-                <td>${c.location}</td>
-                <td>${getBadgeHtml(c.status)}</td>
-                <td class="text-right">
-                    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.2rem">
-                        ${assignedName}
-                        <div style="display:flex; gap:0.4rem;">
-                            <button class="btn btn-outline btn-icon text-xs mt-1 delete-action-btn" style="padding:0.2rem 0.4rem; color:var(--clr-danger); border-color:var(--clr-danger);" title="Delete Complaint">
-                                <i data-feather="trash-2" style="width:12px;height:12px;"></i>
-                            </button>
-                            <button class="btn btn-outline btn-icon text-xs mt-1 assign-action-btn" style="padding:0.2rem 0.6rem;">
-                                <i data-feather="user-plus" style="width:12px;height:12px;margin-right:4px;"></i> ${isAssigned ? 'Change' : 'Assign'}
-                            </button>
+                tr.innerHTML = `
+                    <td>
+                        <div style="margin-bottom:0.2rem"><strong>TKT-${c.complaint_id}</strong> <span class="text-xs subtitle">${dateStr}</span></div>
+                        <p class="subtitle text-xs" style="white-space:normal;">${c.description}</p>
+                    </td>
+                    <td>${c.student_name || 'Unknown'}</td>
+                    <td>${c.category}</td>
+                    <td>${c.location}</td>
+                    <td>${getBadgeHtml(c.status)}</td>
+                    <td class="text-right">
+                        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.25rem">
+                            ${assignedName}
+                            <div style="display:flex; gap:0.35rem;">
+                                <button class="btn-sm-danger delete-action-btn" title="Delete Complaint">
+                                    <i data-feather="trash-2" style="width:11px;height:11px;"></i>
+                                </button>
+                                <button class="btn-sm-assign assign-action-btn">
+                                    <i data-feather="user-plus" style="width:11px;height:11px;"></i> ${isAssigned ? 'Change' : 'Assign'}
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                </td>
-            `;
+                    </td>
+                `;
 
-            tr.querySelector('.assign-action-btn').addEventListener('click', (ev) => {
-                ev.stopPropagation();
-                openAssignModal(c.complaint_id);
+                tr.querySelector('.assign-action-btn').addEventListener('click', (ev) => {
+                    ev.stopPropagation();
+                    openAssignModal(c.complaint_id);
+                });
+                tr.querySelector('.delete-action-btn').addEventListener('click', (ev) => {
+                    ev.stopPropagation();
+                    if (confirm(`Permanently delete ticket TKT-${c.complaint_id}?`)) deleteComplaint(c.complaint_id);
+                });
+                tbody.appendChild(tr);
             });
-            tr.querySelector('.delete-action-btn').addEventListener('click', (ev) => {
-                ev.stopPropagation();
-                if (confirm(`Permanently delete ticket TKT-${c.complaint_id}?`)) deleteComplaint(c.complaint_id);
-            });
-            tbody.appendChild(tr);
-        });
-        feather.replace();
+            feather.replace();
+        }
+    };
+
+    renderAdminRows(activeComplaints);
+
+    const searchInput = document.getElementById('admin-search');
+    if (searchInput) {
+        searchInput.oninput = (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const filtered = activeComplaints.filter(c =>
+                `tkt-${c.complaint_id}`.includes(query) ||
+                (c.student_name && c.student_name.toLowerCase().includes(query)) ||
+                (c.category && c.category.toLowerCase().includes(query)) ||
+                (c.location && c.location.toLowerCase().includes(query)) ||
+                (c.description && c.description.toLowerCase().includes(query)) ||
+                (c.staff_name && c.staff_name.toLowerCase().includes(query))
+            );
+            renderAdminRows(filtered);
+        };
     }
 }
 
@@ -585,10 +660,10 @@ async function renderAdminResolvedDash() {
                 <td>${c.location}</td>
                 <td>${getBadgeHtml(c.status)}</td>
                 <td class="text-right">
-                    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.2rem">
+                    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.25rem">
                         ${assignedName}
-                        <button class="btn btn-outline btn-icon text-xs mt-1 delete-action-btn" style="padding:0.2rem 0.4rem; color:var(--clr-danger); border-color:var(--clr-danger);" title="Delete Complaint">
-                            <i data-feather="trash-2" style="width:12px;height:12px;"></i>
+                        <button class="btn-sm-danger delete-action-btn" title="Delete Complaint">
+                            <i data-feather="trash-2" style="width:11px;height:11px;"></i>
                         </button>
                     </div>
                 </td>
@@ -628,6 +703,11 @@ function openAssignModal(id) {
 
 document.querySelectorAll('.close-modal-btn').forEach(btn => {
     btn.addEventListener('click', () => document.getElementById('assign-modal')?.classList.remove('active'));
+});
+
+// Close modal on backdrop click
+document.querySelector('.modal-backdrop')?.addEventListener('click', () => {
+    document.getElementById('assign-modal')?.classList.remove('active');
 });
 
 document.getElementById('btn-confirm-assign')?.addEventListener('click', async (e) => {
@@ -767,8 +847,9 @@ async function renderStaffDash() {
             } else {
                 actionHtml = `
                     <div class="select-wrapper">
-                        <select class="status-select staff-status-select" data-id="${c.complaint_id}" style="min-width:140px;">
-                            <option value="Pending" selected>Pending</option>
+                        <select class="status-select staff-status-select" data-id="${c.complaint_id}" data-status="${c.status}" style="min-width:145px;">
+                            <option value="Pending"${c.status === 'Pending' ? ' selected' : ''}>Pending</option>
+                            <option value="In Progress"${c.status === 'In Progress' ? ' selected' : ''}>In Progress</option>
                             <option value="Resolved">Resolved</option>
                         </select>
                         <i data-feather="chevron-down" class="select-icon"></i>
@@ -808,4 +889,80 @@ async function renderStaffDash() {
 
         feather.replace();
     }
+}
+
+// ==========================================================
+// SIDEBAR BADGE (Live Counts)
+// ==========================================================
+function addBadge(target, count) {
+    const btn = document.querySelector(`.nav-item[data-target="${target}"]`);
+    if (btn && count > 0) {
+        btn.querySelector('.nav-badge')?.remove();
+        const badge = document.createElement('span');
+        badge.className = 'nav-badge';
+        badge.textContent = count > 99 ? '99+' : count;
+        btn.appendChild(badge);
+    }
+}
+
+async function updateSidebarBadges(role) {
+    const allComplaints = await apiCall(`${API}/complaints`);
+    if (!Array.isArray(allComplaints)) return;
+
+    if (role === 'student' && currentUser) {
+        const pending = allComplaints.filter(c => c.student_id === currentUser.id && c.status !== 'Resolved').length;
+        addBadge('student', pending);
+    } else if (role === 'admin') {
+        const active = allComplaints.filter(c => c.status !== 'Resolved').length;
+        addBadge('admin', active);
+    } else if (role === 'staff' && currentUser) {
+        const tasks = allComplaints.filter(c => c.assigned_staff_id === currentUser.id && c.status !== 'Resolved').length;
+        addBadge('staff', tasks);
+    }
+}
+
+// ==========================================================
+// STAFF PERFORMANCE VIEW (Admin)
+// ==========================================================
+async function renderStaffPerformance() {
+    const tbody = document.getElementById('staff-performance-body');
+    const emptyState = document.getElementById('staff-performance-empty-state');
+    if (!tbody || !emptyState) return;
+    tbody.innerHTML = '';
+
+    const [staffList, allComplaints] = await Promise.all([
+        apiCall(`${API}/staff`),
+        apiCall(`${API}/complaints`)
+    ]);
+
+    const staff = Array.isArray(staffList) ? staffList : [];
+    const complaints = Array.isArray(allComplaints) ? allComplaints : [];
+
+    if (staff.length === 0) {
+        tbody.parentElement.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        return;
+    }
+
+    tbody.parentElement.classList.remove('hidden');
+    emptyState.classList.add('hidden');
+
+    staff.forEach(s => {
+        const assigned = complaints.filter(c => c.assigned_staff_id === s.staff_id).length;
+        const resolved = complaints.filter(c => c.assigned_staff_id === s.staff_id && c.status === 'Resolved').length;
+        const rate = assigned === 0 ? '<span class="text-xs subtitle">No tasks yet</span>' : `<strong>${Math.round((resolved / assigned) * 100)}%</strong>`;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>
+                <div><strong>${s.name}</strong></div>
+                <div class="text-xs subtitle">${s.email}</div>
+            </td>
+            <td>${s.department}</td>
+            <td><span class="status-badge badge-progress">${assigned}</span></td>
+            <td><span class="status-badge badge-resolved">${resolved}</span></td>
+            <td class="text-right">${rate}</td>
+        `;
+        tbody.appendChild(tr);
+    });
 }
