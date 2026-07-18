@@ -7,66 +7,42 @@
       "use": "@vercel/node"
     },
     {
-      "src": "public/index.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "public/login.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "public/student.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "public/staff.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "public/admin.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "public/styles.css",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "public/app.js",
+      "src": "public/**/*",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "server.js"
+      "dest": "/server.js"
     },
     {
       "src": "/styles.css",
-      "dest": "public/styles.css"
+      "dest": "/public/styles.css"
     },
     {
       "src": "/app.js",
-      "dest": "public/app.js"
+      "dest": "/public/app.js"
     },
     {
       "src": "/login",
-      "dest": "public/login.html"
+      "dest": "/public/login.html"
     },
     {
       "src": "/student",
-      "dest": "public/student.html"
+      "dest": "/public/student.html"
     },
     {
       "src": "/staff",
-      "dest": "public/staff.html"
+      "dest": "/public/staff.html"
     },
     {
       "src": "/admin",
-      "dest": "public/admin.html"
+      "dest": "/public/admin.html"
     },
     {
       "src": "/(.*)",
-      "dest": "public/index.html"
+      "dest": "/public/index.html"
     }
   ]
 }
