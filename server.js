@@ -13,8 +13,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve the frontend static files (index.html, styles.css, app.js)
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve the frontend static files with HTML extension fallback (matches Vercel's cleanUrls)
+app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] }));
 
 // Mount API routers
 app.use('/api/auth', authRoutes);
